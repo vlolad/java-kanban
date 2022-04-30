@@ -3,10 +3,16 @@ import java.util.ArrayList;
 public class EpicTask extends Task {
 
     private ArrayList<Integer> subTasksIDs;
-
+    // Конструктор для создания эпика
     public EpicTask(String name, String description){
         super(name, description);
         subTasksIDs = new ArrayList<>();
+    }
+    // Конструктор для изменения эпика
+    public EpicTask(int id, String name, String description){
+        setId(id);
+        setName(name);
+        setDescription(description);
     }
 
     @Override
@@ -25,8 +31,16 @@ public class EpicTask extends Task {
         subTasksIDs.add(id);
     }
 
+    public void removeSubTaskID(int id){
+        subTasksIDs.remove(id);
+    }
+
     public ArrayList<Integer> getSubTasksIDs() {
         return subTasksIDs;
+    }
+
+    public void clearSubTasksIDs(){
+        subTasksIDs.clear();
     }
 
     public void setSubTasksIDs(ArrayList<Integer> subTasksIDs) {
