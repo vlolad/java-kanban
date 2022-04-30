@@ -4,6 +4,21 @@ public class Task {
     private String description;
     private TaskStatus status;
 
+    public Task() { }
+    // Конструктор для создания новой таски
+    public Task(String name, String description){
+        status = TaskStatus.NEW;
+        this.name = name;
+        this.description = description;
+    }
+    // Конструкторы для изменения существующей таски
+    public Task(int id,String name, String description, TaskStatus status){
+        this.id = id;
+        this.status = status;
+        this.name = name;
+        this.description = description;
+    }
+
     @Override
     public String toString(){
         String showBody;
@@ -14,22 +29,6 @@ public class Task {
         }
         return "Task{name= «" + name + "» | id=«" + id + "» | description(length)=«"
                 + showBody + "» | status=«" + status + "»}";
-    }
-
-    public Task() { }
-
-    // Конструктор для создания новой таски
-    public Task(String name, String description){
-        status = TaskStatus.NEW;
-        this.name = name;
-        this.description = description;
-    }
-
-    // Конструктор для изменения существующей таски
-    public Task(String name, String description, TaskStatus status){
-        this.status = status;
-        this.name = name;
-        this.description = description;
     }
 
     public int getId() {
