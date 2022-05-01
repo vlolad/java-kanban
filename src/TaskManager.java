@@ -72,16 +72,21 @@ public class TaskManager {
     // Методы для создания тасков
 
     public void createTask(Task task){
-        tasks.put(generateID(), task);
+        int id = generateID();
+        task.setId(id);
+        tasks.put(id, task);
     }
 
     public void createEpic(EpicTask epic){
-        epics.put(generateID(), epic);
+        int id = generateID();
+        epic.setId(id);
+        epics.put(id, epic);
     }
 
     public void createSubTask(SubTask subTask){
         if (epics.containsKey(subTask.getEpicID())){
             int id = generateID();
+            subTask.setId(id);
             subTasks.put(id, subTask);
             epics.get(subTask.getEpicID()).addSubTaskID(id);
             checkEpicForDone(subTask.getEpicID());
@@ -112,6 +117,7 @@ public class TaskManager {
 
     public void deleteSubTaskByID(int id){
         if (subTasks.containsKey(id)){
+            // Внес правки в removeSubTaskID(id) в классе EpicTask
             epics.get(subTasks.get(id).getEpicID()).removeSubTaskID(id); // Удаляем ID сабтаски из эпика
             checkEpicForDone(subTasks.get(id).getEpicID()); // Обновляем статус
             subTasks.remove(id); // Наконец удаляем сабтаск
@@ -131,8 +137,6 @@ public class TaskManager {
 
     public void updateEpic(EpicTask newEpic){
         if (epics.containsKey(newEpic.getId())){
-            // Передаем обновленному эпику список старых сабтасков
-            newEpic.setSubTasksIDs(epics.get(newEpic.getId()).getSubTasksIDs());
             epics.put(newEpic.getId(), newEpic);
         } else {
             System.out.println("Epic with this ID is not exist.");
@@ -149,46 +153,34 @@ public class TaskManager {
     }
 
     // Метод для получения списка всех сабтасков одного эпика
-    public void getEpicSubTasks(int epicID){
+    public ArrayList<SubTask> getEpicSubTasks(int epicID){
+        ArrayList<SubTask> subTaskArray = new ArrayList<>();
         if (epics.containsKey(epicID)){
-            System.out.println(epics.get(epicID)); //Показываем Эпик
             for (Integer subID : epics.get(epicID).getSubTasksIDs()){
-                System.out.println(subTasks.get(subID));
+                subTaskArray.add(subTasks.get(subID));
             }
+            return subTaskArray;
         } else {
             System.out.println("Cannot find EpicTask by this ID.");
+            return null;
         }
     }
 
-    /* Уточню по работе метода checkEpicForDone(), пока не хочу полностью править его логику
-    * Цикл for в методе один, чтобы проверить все сабтаски внутри
-    * Сначала идет проверка на то, есть ли в Эпике сатбаски со статусом не-NEW. Если есть - меняем checkNotAllNEW
-    * Далее считаем, сколько из сабтасков имеют статус DONE используя счетчик
-    * После чего смотрим по имеющимся сведениям, что делать:
-    * 1. Если все сабтаски NEW (!checkNotAllNEW) или в эпике нет сабтасков - то он NEW
-    * 2. Если число сабтасков, которые DONE, равняется общему числу сабтасков, то статус эпика DONE
-    * 3. В остальных случаях статус эпика IN_PROGRESS
-    *
-    * Если всё же есть реализация лучше - возвращайте после ревью, буду пыхтеть дальше)
-    * P.S. Переменные были названы криво и было кучу лишних строк, всё поправил*/
 
+    // Понял комментарии, упростил метод, спасибо!!
     // Проверка стстуса Эпика
     private void checkEpicForDone(int epicID){
         boolean checkNotAllNEW = false;
         int subTasksLength = epics.get(epicID).getSubTasksIDs().size();
-        int countDONE = 0; // Понял!
+        int countDONE = 0;
+
         for (Integer id : epics.get(epicID).getSubTasksIDs()){
-            // Проверка, все ли NEW
-            if (subTasks.get(id).getStatus() == TaskStatus.IN_PROGRESS){
+            if (subTasks.get(id).getStatus() == TaskStatus.IN_PROGRESS){ // Если есть IN_PROGRESS - сразу ставим статус
                 epics.get(epicID).setStatus(TaskStatus.IN_PROGRESS);
                 return;
-            }
-            if (subTasks.get(id).getStatus() != TaskStatus.NEW){
-                checkNotAllNEW = true;
-            }
-            // Проверка, сколько задач имеют статус DONE
-            if (subTasks.get(id).getStatus() == TaskStatus.DONE){
+            } else if (subTasks.get(id).getStatus() == TaskStatus.DONE){ // Если есть хоть один DONE - начинаем считать
                 countDONE++;
+                checkNotAllNEW = true;
             }
         }
         // Выбираем новый статус и присваиваем
