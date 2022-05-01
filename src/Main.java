@@ -1,5 +1,3 @@
-import java.util.HashMap;
-
 public class Main {
 
     public static void main(String[] args) {
@@ -7,10 +5,10 @@ public class Main {
 
         TaskManager taskManager = new TaskManager();
         // Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей.
-        taskManager.createTask(new Task("Task1", "hehe")); // id 1
-        taskManager.createTask(new Task("Task2", "lol")); // id 2
+        taskManager.createTask(new Task("Task1", "hehe", TaskStatus.NEW)); // id 1
+        taskManager.createTask(new Task("Task2", "lol", TaskStatus.NEW)); // id 2
         taskManager.createEpic(new EpicTask("FirstEpic", "boom")); // id 3
-        taskManager.createSubTask(new SubTask("1subtask1", "hehah", 3)); // id 4
+        taskManager.createSubTask(new SubTask("1subtask1", "hehah", TaskStatus.DONE, 3)); // id 4
         taskManager.createSubTask(new SubTask("1subtask2", "description??", 3)); // id 5
         taskManager.createEpic(new EpicTask("NotFirstEpic", "null")); // id 6
         taskManager.createSubTask(new SubTask("secondEpicSubtask", "description??", 6)); // id 7
@@ -18,6 +16,9 @@ public class Main {
         System.out.println(taskManager.getEpics());
         System.out.println(taskManager.getTasks());
         System.out.println(taskManager.getSubTasks());
+        System.out.println("");
+        // Дополнительно тестирую метод по возвращению сабтасков по ID эпика
+        System.out.println(taskManager.getEpicSubTasks(3));
         System.out.println("");
         // Измените статусы созданных объектов, распечатайте.
         taskManager.updateTask(new Task(1, "UpdatedTask", "дай бы бог завелось", TaskStatus.DONE));
