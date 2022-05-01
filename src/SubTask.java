@@ -1,9 +1,14 @@
 public class SubTask extends Task {
 
     private Integer epicID;
-    // Создание новой сабтаск
+    // Создание новой сабтаск (без статуса)
     public SubTask(String name, String description, int epicID){
         super(name, description);
+        this.epicID = epicID;
+    }
+    // Создание новой сабтаск (со статусом)
+    public SubTask(String name, String description, TaskStatus status, int epicID){
+        super(name, description, status);
         this.epicID = epicID;
     }
     // Изменение сабтаски

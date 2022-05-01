@@ -5,11 +5,17 @@ public class Task {
     private TaskStatus status;
 
     public Task() { }
-    // Конструктор для создания новой таски
+    // Конструктор для создания новой таски (без статуса)
     public Task(String name, String description){
         status = TaskStatus.NEW;
         this.name = name;
         this.description = description;
+    }
+    // Конструктор для создания новой таски (со статусом)
+    public Task(String name, String description, TaskStatus status){
+        this.name = name;
+        this.description = description;
+        this.status = status;
     }
     // Конструкторы для изменения существующей таски
     public Task(int id,String name, String description, TaskStatus status){

@@ -2,11 +2,10 @@ import java.util.ArrayList;
 
 public class EpicTask extends Task {
 
-    private ArrayList<Integer> subTasksIDs;
+    private ArrayList<Integer> subTasksIDs = new ArrayList<>();
     // Конструктор для создания эпика
     public EpicTask(String name, String description){
         super(name, description);
-        subTasksIDs = new ArrayList<>();
     }
     // Конструктор для изменения эпика
     public EpicTask(int id, String name, String description){
@@ -31,7 +30,7 @@ public class EpicTask extends Task {
         subTasksIDs.add(id);
     }
 
-    public void removeSubTaskID(int id){
+    public void removeSubTaskID(Integer id){ // Теперь удаляет соответствующий объект Integer из списка
         subTasksIDs.remove(id);
     }
 
