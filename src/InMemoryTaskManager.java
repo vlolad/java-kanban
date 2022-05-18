@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -9,6 +10,9 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, EpicTask> epics = new HashMap<>();
     private final HashMap<Integer, SubTask> subTasks = new HashMap<>();
+
+    // Список для хранения истории вызова задач
+    private final List<Integer> history = new ArrayList<>();
 
     // Методы для вывода необходимого вида тасков в виде списка
     @Override
@@ -51,6 +55,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskByID(int id){
         if (tasks.containsKey(id)){
+            addIDToHistory(id);
             return tasks.get(id);
         } else {
             System.out.println("Task not found.");
@@ -61,6 +66,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getEpicByID(int id){
         if (epics.containsKey(id)){
+            addIDToHistory(id);
             return epics.get(id);
         } else {
             System.out.println("Epic not found.");
@@ -71,6 +77,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getSubTaskByID(int id){
         if (subTasks.containsKey(id)){
+            addIDToHistory(id);
             return subTasks.get(id);
         } else {
             System.out.println("Subtask not found.");
@@ -185,6 +192,17 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
+    public List<Integer> getHistory() {
+        return history;
+    }
+
+    private void addIDToHistory (int id){
+        if (history.size() == 10){
+            history.remove(0);
+        }
+        history.add(id);
+    }
     // Проверка стстуса Эпика
     private void checkEpicForDone(int epicID){
         boolean checkNotAllNEW = false;
