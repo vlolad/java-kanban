@@ -28,6 +28,5 @@ public interface TaskManager {
          void updateSubTask(SubTask newSubTask);
 
          ArrayList<SubTask> getEpicSubTasks(int epicID);
-
-         List<Integer> getHistory();
+         HistoryManager getHistoryManager();
     }

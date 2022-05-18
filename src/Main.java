@@ -3,7 +3,8 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        TaskManager taskManager = Managers.getDefault();
+
         // Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей.
         taskManager.createTask(new Task("Task1", "hehe", TaskStatus.NEW)); // id 1
         taskManager.createTask(new Task("Task2", "lol", TaskStatus.NEW)); // id 2
@@ -15,7 +16,7 @@ public class Main {
         taskManager.getTaskByID(1);
         taskManager.getEpicByID(3);
         taskManager.getSubTaskByID(5);
-        System.out.println(taskManager.getHistory());
+        System.out.println(taskManager.getHistoryManager().getHistory());
         // Распечатайте списки эпиков, задач и подзадач
         System.out.println(taskManager.getEpics());
         System.out.println(taskManager.getTasks());
@@ -44,16 +45,16 @@ public class Main {
         taskManager.getTaskByID(2);
         taskManager.getEpicByID(6);
         taskManager.getSubTaskByID(7);
-        System.out.println(taskManager.getHistory());
+        System.out.println(taskManager.getHistoryManager().getHistory());
         taskManager.getTaskByID(2);
         taskManager.getEpicByID(6);
         taskManager.getSubTaskByID(7);
         taskManager.getTaskByID(1);
         taskManager.getSubTaskByID(7);
         taskManager.getTaskByID(2);
-        System.out.println(taskManager.getHistory()); // [3, 5, 2, 6, 7, 2, 6, 7, 7, 2]
+        System.out.println(taskManager.getHistoryManager().getHistory()); // [3, 5, 2, 6, 7, 2, 6, 7, 7, 2]
         taskManager.getEpicByID(6);
-        System.out.println(taskManager.getHistory()); // [5, 2, 6, 7, 2, 6, 7, 7, 2, 6] - успех!
+        System.out.println(taskManager.getHistoryManager().getHistory()); // [5, 2, 6, 7, 2, 6, 7, 7, 2, 6] - успех!
     }
 }
 
