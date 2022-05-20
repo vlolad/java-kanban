@@ -1,7 +1,6 @@
 package net.yandex.taskmanager.services;
 
 import net.yandex.taskmanager.model.*;
-import net.yandex.taskmanager.model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistoryManager(){
-        List<Task> historyToScreen = new ArrayList<>();
+        List<Task> historyToScreen;
         historyToScreen = historyManager.getHistory();
         return historyToScreen;
     }
