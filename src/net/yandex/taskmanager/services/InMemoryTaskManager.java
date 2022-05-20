@@ -1,35 +1,44 @@
+package net.yandex.taskmanager.services;
+
+import net.yandex.taskmanager.model.*;
+import net.yandex.taskmanager.model.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
     private Integer id = 0;
 
     // Мапы для хранения задач
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, EpicTask> epics = new HashMap<>();
-    private final HashMap<Integer, SubTask> subTasks = new HashMap<>();
+    private final Map<Integer, Task> tasks = new HashMap<>();
+    private final Map<Integer, EpicTask> epics = new HashMap<>();
+    private final Map<Integer, SubTask> subTasks = new HashMap<>();
 
-    private HistoryManager historyManager = Managers.getDefaultHistory();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
-    public HistoryManager getHistoryManager(){
-        return historyManager;
+    public List<Task> getHistoryManager(){
+        List<Task> historyToScreen = new ArrayList<>();
+        historyToScreen = historyManager.getHistory();
+        return historyToScreen;
     }
 
     // Методы для вывода необходимого вида тасков в виде списка
     @Override
-    public ArrayList<Task> getTasks(){
+    public List<Task> getTasks(){
         return new ArrayList<>(tasks.values());
     }
 
     @Override
-    public ArrayList<EpicTask> getEpics(){
+    public List<EpicTask> getEpics(){
         return new ArrayList<>(epics.values());
     }
 
     @Override
-    public ArrayList<SubTask> getSubTasks(){
+    public List<SubTask> getSubTasks(){
         return new ArrayList<>(subTasks.values());
     }
 
@@ -142,7 +151,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteSubTaskByID(int id){
         if (subTasks.containsKey(id)){
-            // Внес правки в removeSubTaskID(id) в классе EpicTask
+            // Внес правки в removeSubTaskID(id) в классе net.yandex.taskmanager.model.EpicTask
             epics.get(subTasks.get(id).getEpicID()).removeSubTaskID(id); // Удаляем ID сабтаски из эпика
             checkEpicForDone(subTasks.get(id).getEpicID()); // Обновляем статус
             subTasks.remove(id); // Наконец удаляем сабтаск
@@ -182,8 +191,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     // Метод для получения списка всех сабтасков одного эпика
     @Override
-    public ArrayList<SubTask> getEpicSubTasks(int epicID){
-        ArrayList<SubTask> subTaskArray = new ArrayList<>();
+    public List<SubTask> getEpicSubTasks(int epicID){
+        List<SubTask> subTaskArray = new ArrayList<>();
         if (epics.containsKey(epicID)){
             for (Integer subID : epics.get(epicID).getSubTasksIDs()){
                 subTaskArray.add(subTasks.get(subID));

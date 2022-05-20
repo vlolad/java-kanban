@@ -1,11 +1,15 @@
+package net.yandex.taskmanager.services;
+
+import net.yandex.taskmanager.model.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
 
-         ArrayList<Task> getTasks();
-         ArrayList<EpicTask> getEpics();
-         ArrayList<SubTask> getSubTasks();
+         List<Task> getTasks();
+         List<EpicTask> getEpics();
+         List<SubTask> getSubTasks();
 
          void clearTasks();
          void clearEpics();
@@ -27,6 +31,6 @@ public interface TaskManager {
          void updateEpic(EpicTask newEpic);
          void updateSubTask(SubTask newSubTask);
 
-         ArrayList<SubTask> getEpicSubTasks(int epicID);
-         HistoryManager getHistoryManager();
+         List<SubTask> getEpicSubTasks(int epicID);
+         List<Task> getHistoryManager();
     }
