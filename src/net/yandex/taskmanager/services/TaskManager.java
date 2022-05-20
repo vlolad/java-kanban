@@ -2,7 +2,6 @@ package net.yandex.taskmanager.services;
 
 import net.yandex.taskmanager.model.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
