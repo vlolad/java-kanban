@@ -1,3 +1,7 @@
+package net.yandex.taskmanager;
+import net.yandex.taskmanager.services.*;
+import net.yandex.taskmanager.model.*;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -16,7 +20,7 @@ public class Main {
         taskManager.getTaskByID(1);
         taskManager.getEpicByID(3);
         taskManager.getSubTaskByID(5);
-        System.out.println(taskManager.getHistoryManager().getHistory());
+        System.out.println(taskManager.getHistoryManager());
         // Распечатайте списки эпиков, задач и подзадач
         System.out.println(taskManager.getEpics());
         System.out.println(taskManager.getTasks());
@@ -45,16 +49,16 @@ public class Main {
         taskManager.getTaskByID(2);
         taskManager.getEpicByID(6);
         taskManager.getSubTaskByID(7);
-        System.out.println(taskManager.getHistoryManager().getHistory());
+        System.out.println(taskManager.getHistoryManager());
         taskManager.getTaskByID(2);
         taskManager.getEpicByID(6);
         taskManager.getSubTaskByID(7);
         taskManager.getTaskByID(1);
         taskManager.getSubTaskByID(7);
         taskManager.getTaskByID(2);
-        System.out.println(taskManager.getHistoryManager().getHistory()); // [3, 5, 2, 6, 7, 2, 6, 7, 7, 2]
+        System.out.println(taskManager.getHistoryManager()); // [3, 5, 2, 6, 7, 2, 6, 7, 7, 2]
         taskManager.getEpicByID(6);
-        System.out.println(taskManager.getHistoryManager().getHistory()); // [5, 2, 6, 7, 2, 6, 7, 7, 2, 6] - успех!
+        System.out.println(taskManager.getHistoryManager()); // [5, 2, 6, 7, 2, 6, 7, 7, 2, 6] - успех!
     }
 }
 

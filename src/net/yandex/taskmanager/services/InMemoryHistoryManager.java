@@ -1,3 +1,7 @@
+package net.yandex.taskmanager.services;
+
+import net.yandex.taskmanager.model.Task;
+
 import java.util.ArrayList;
 import java.util.List;
 

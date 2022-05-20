@@ -1,8 +1,11 @@
+package net.yandex.taskmanager.model;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class EpicTask extends Task {
 
-    private ArrayList<Integer> subTasksIDs = new ArrayList<>();
+    private List<Integer> subTasksIDs = new ArrayList<>();
     // Конструктор для создания эпика
     public EpicTask(String name, String description){
         super(name, description);
@@ -34,7 +37,7 @@ public class EpicTask extends Task {
         subTasksIDs.remove(id);
     }
 
-    public ArrayList<Integer> getSubTasksIDs() {
+    public List<Integer> getSubTasksIDs() {
         return subTasksIDs;
     }
 
@@ -42,7 +45,7 @@ public class EpicTask extends Task {
         subTasksIDs.clear();
     }
 
-    public void setSubTasksIDs(ArrayList<Integer> subTasksIDs) {
+    public void setSubTasksIDs(List<Integer> subTasksIDs) {
         this.subTasksIDs = subTasksIDs;
     }
 

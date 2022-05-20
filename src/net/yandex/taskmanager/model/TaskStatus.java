@@ -1,3 +1,5 @@
+package net.yandex.taskmanager.model;
+
 public enum TaskStatus {
     NEW ("New"),
     IN_PROGRESS ("In progress"),

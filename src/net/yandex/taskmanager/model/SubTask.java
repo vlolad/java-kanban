@@ -1,3 +1,5 @@
+package net.yandex.taskmanager.model;
+
 public class SubTask extends Task {
 
     private Integer epicID;
