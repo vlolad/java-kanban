@@ -20,9 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistoryManager(){
-        List<Task> historyToScreen;
-        historyToScreen = historyManager.getHistory();
-        return historyToScreen;
+        return new ArrayList<>(historyManager.getHistory());
     }
 
     // Методы для вывода необходимого вида тасков в виде списка
