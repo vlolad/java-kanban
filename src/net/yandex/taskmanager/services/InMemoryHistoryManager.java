@@ -61,10 +61,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         for (Node a = first; a != null; a = a.head){
             taskList.add(a.body);
         }
-
-        /* for (Node node : customLinkedList.values()){
-            taskList.add(node.body);
-        } */
         return taskList;
     }
 
