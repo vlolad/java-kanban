@@ -48,6 +48,13 @@ public class Main {
 
         taskManager.deleteEpicByID(3);
         System.out.println(taskManager.getHistoryManager()); // В истории 1, 7
+        taskManager.getEpicByID(7);
+        System.out.println(taskManager.getHistoryManager()); // В истории 1, 7
+        taskManager.getTaskByID(1);
+        System.out.println(taskManager.getHistoryManager()); // В истории 7, 1
+        taskManager.deleteTaskByID(1);
+        System.out.println(taskManager.getHistoryManager()); // В истории 7
+
     }
 }
 
