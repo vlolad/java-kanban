@@ -20,6 +20,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistoryManager(){
+        List<Task> allHistory = new ArrayList<>(historyManager.getHistory());
+        /* List<Integer> allHistoryID = new ArrayList<>();
+        for (Task task : allHistory){
+            allHistoryID.add(task.getId());
+        }
+        return allHistoryID; */ // Тут был код для проверки, чтобы выводился только массив ID задач в истории
         return new ArrayList<>(historyManager.getHistory());
     }
 
@@ -128,6 +134,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteTaskByID(int id){
         if (tasks.containsKey(id)){
             tasks.remove(id);
+            historyManager.remove(id);
         } else {
             System.out.println("Task not exist.");
         }
@@ -138,8 +145,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (epics.containsKey(id)){
             for (Integer subTaskID : epics.get(id).getSubTasksIDs()){
                 subTasks.remove(subTaskID);
+                historyManager.remove(subTaskID); // Удаляет все сабтаски в эпике из истории
             }
             epics.remove(id);
+            historyManager.remove(id);
         } else {
             System.out.println("Epic not exist.");
         }
@@ -148,10 +157,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteSubTaskByID(int id){
         if (subTasks.containsKey(id)){
-            // Внес правки в removeSubTaskID(id) в классе net.yandex.taskmanager.model.EpicTask
+            // Внес правки в removeSubTaskID(id) в классе EpicTask
             epics.get(subTasks.get(id).getEpicID()).removeSubTaskID(id); // Удаляем ID сабтаски из эпика
             checkEpicForDone(subTasks.get(id).getEpicID()); // Обновляем статус
             subTasks.remove(id); // Наконец удаляем сабтаск
+            historyManager.remove(id);
         } else {
             System.out.println("Subtask not exist.");
         }
