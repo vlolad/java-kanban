@@ -20,13 +20,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistoryManager(){
-        List<Task> allHistory = new ArrayList<>(historyManager.getHistory());
+        // List<Task> allHistory = new ArrayList<>(historyManager.getHistory());
         /* List<Integer> allHistoryID = new ArrayList<>();
         for (Task task : allHistory){
             allHistoryID.add(task.getId());
         }
         return allHistoryID; */ // Тут был код для проверки, чтобы выводился только массив ID задач в истории
-        return new ArrayList<>(historyManager.getHistory());
+        return historyManager.getHistory();
     }
 
     // Методы для вывода необходимого вида тасков в виде списка
@@ -48,18 +48,38 @@ public class InMemoryTaskManager implements TaskManager {
     // Методы для удаления определенных типов таск
     @Override
     public void clearTasks(){
-        tasks.clear();
+        if (!tasks.isEmpty()){
+            for (Task task : tasks.values()){
+                historyManager.remove(task.getId());
+            }
+            tasks.clear();
+        }
     }
 
     @Override
     public void clearEpics(){
-        epics.clear();
-        subTasks.clear();
+        if (!epics.isEmpty()){
+            for (EpicTask task : epics.values()){
+                historyManager.remove(task.getId());
+            }
+            epics.clear();
+        }
+        if (!subTasks.isEmpty()){
+            for (SubTask task : subTasks.values()){
+                historyManager.remove(task.getId());
+            }
+            subTasks.clear();
+        }
     }
 
     @Override
     public void clearSubTasks(){
-        subTasks.clear();
+        if (!subTasks.isEmpty()){
+            for (SubTask task : subTasks.values()){
+                historyManager.remove(task.getId());
+            }
+            subTasks.clear();
+        }
         for (EpicTask epic : epics.values()){ // Также очищаются списки подзадач в эпиках и идет проверка их статуса
             epic.clearSubTasksIDs();
             checkEpicForDone(epic.getId());
