@@ -16,11 +16,15 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task){
-        if (customLinkedList.containsKey(task.getId())){
-            removeNode(customLinkedList.get(task.getId()));
+        if (last != null && task.equals(last.body)){ // Если переданный объект уже последний в истории, метод отключается.
+            return;
+        } else {
+            if (customLinkedList.containsKey(task.getId())){
+                removeNode(customLinkedList.get(task.getId()));
+            }
+            linkLast(task);
+            customLinkedList.put(task.getId(), last);
         }
-        linkLast(task);
-        customLinkedList.put(task.getId(), last);
     }
 
     private void linkLast(Task task){
@@ -30,35 +34,35 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             Node secondLast = last;
             last = new Node (secondLast, task, null);
-            secondLast.head = last;
+            secondLast.next = last;
         }
     }
 
     private void removeNode(Node node) {
         if (customLinkedList.size() == 1){ // Т.е. в мапе только одна нода
             customLinkedList.clear();
-        } else if (node.tail == null){ // если нода first
-            Node oldHead = node.head;
-            oldHead.tail = null;
-            first = oldHead;
+        } else if (node.prev == null){ // если нода first
+            Node oldNext = node.next;
+            oldNext.prev = null;
+            first = oldNext;
             customLinkedList.remove(node.body.getId());
-        } else if (node.head == null){ // если нода last
-            Node oldTail = node.tail;
-            oldTail.head = null;
-            last = oldTail;
+        }  else if (node.next == null){ // если нода last
+            Node oldPrev = node.prev;
+            oldPrev.next = null;
+            last = oldPrev;
             customLinkedList.remove(node.body.getId());
         } else { // если нода где-то в середине списка
-            Node oldHead = node.head;
-            Node oldTail = node.tail;
-            oldTail.head = oldHead;
-            oldHead.tail = oldTail;
+            Node oldNext = node.next;
+            Node oldPrev = node.prev;
+            oldPrev.next = oldNext;
+            oldNext.prev = oldPrev;
             customLinkedList.remove(node.body.getId());
         }
     }
 
     private List<Task> getTasks(){
         List<Task> taskList = new ArrayList<>();
-        for (Node a = first; a != null; a = a.head){
+        for (Node a = first; a != null; a = a.next){
             taskList.add(a.body);
         }
         return taskList;
@@ -77,14 +81,14 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private static class Node {
-        private Node tail;
+        private Node prev;
         private final Task body;
-        private Node head;
+        private Node next;
 
-        public Node(Node tail, Task body, Node head){
+        public Node(Node prev, Task body, Node next){
             this.body = body;
-            this.tail = tail;
-            this.head = head;
+            this.prev = prev;
+            this.next = next;
         }
     }
 }
