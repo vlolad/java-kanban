@@ -58,28 +58,22 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearEpics(){
-        if (!epics.isEmpty()){
-            for (EpicTask task : epics.values()){
-                historyManager.remove(task.getId());
-            }
-            epics.clear();
+        for (EpicTask task : epics.values()){
+            historyManager.remove(task.getId());
         }
-        if (!subTasks.isEmpty()){
-            for (SubTask task : subTasks.values()){
-                historyManager.remove(task.getId());
-            }
-            subTasks.clear();
+        epics.clear();
+        for (SubTask task : subTasks.values()){
+            historyManager.remove(task.getId());
         }
+        subTasks.clear();
     }
 
     @Override
     public void clearSubTasks(){
-        if (!subTasks.isEmpty()){
-            for (SubTask task : subTasks.values()){
-                historyManager.remove(task.getId());
-            }
-            subTasks.clear();
+        for (SubTask task : subTasks.values()){
+            historyManager.remove(task.getId());
         }
+        subTasks.clear();
         for (EpicTask epic : epics.values()){ // Также очищаются списки подзадач в эпиках и идет проверка их статуса
             epic.clearSubTasksIDs();
             checkEpicForDone(epic.getId());
