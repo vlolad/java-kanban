@@ -54,7 +54,12 @@ public class Main {
         System.out.println(taskManager.getHistoryManager()); // В истории 7, 1
         taskManager.deleteTaskByID(1);
         System.out.println(taskManager.getHistoryManager()); // В истории 7
+        System.out.println("");
 
+        taskManager.deleteEpicByID(7); // history.isEmpty() = true
+        taskManager.createTask(new Task("Task2", "lol", TaskStatus.NEW)); // ID = 8
+        taskManager.getTaskByID(8);
+        System.out.println(taskManager.getHistoryManager());// [8]
     }
 }
 
