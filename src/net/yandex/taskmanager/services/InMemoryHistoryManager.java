@@ -16,15 +16,15 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task){
-        if (last != null && task.equals(last.body)){ // Если переданный объект уже последний в истории, метод отключается.
+        /*if (last != null && task.equals(last.body)){ // Если переданный объект уже последний в истории, метод отключается.
             return;
-        } else {
+        } else {*/
             if (customLinkedList.containsKey(task.getId())){
                 removeNode(customLinkedList.get(task.getId()));
             }
             linkLast(task);
             customLinkedList.put(task.getId(), last);
-        }
+        //}
     }
 
     private void linkLast(Task task){
@@ -39,25 +39,24 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private void removeNode(Node node) {
-        if (customLinkedList.size() == 1){ // Т.е. в мапе только одна нода
-            customLinkedList.clear();
-        } else if (node.prev == null){ // если нода first
-            Node oldNext = node.next;
-            oldNext.prev = null;
-            first = oldNext;
-            customLinkedList.remove(node.body.getId());
-        }  else if (node.next == null){ // если нода last
-            Node oldPrev = node.prev;
-            oldPrev.next = null;
-            last = oldPrev;
-            customLinkedList.remove(node.body.getId());
-        } else { // если нода где-то в середине списка
-            Node oldNext = node.next;
-            Node oldPrev = node.prev;
-            oldPrev.next = oldNext;
-            oldNext.prev = oldPrev;
-            customLinkedList.remove(node.body.getId());
+        final Node prev = node.prev;
+        final Node next = node.next;
+
+        if (prev == null) {
+            first = next;
+        } else {
+            prev.next = next;
+            node.prev = null;
         }
+
+        if (next == null) {
+            last = prev;
+        } else {
+            next.prev = prev;
+            node.next = null;
+        }
+        customLinkedList.remove(node.body.getId());
+        node.body = null;
     }
 
     private List<Task> getTasks(){
@@ -82,7 +81,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private static class Node {
         private Node prev;
-        private final Task body;
+        private Task body;
         private Node next;
 
         public Node(Node prev, Task body, Node next){
