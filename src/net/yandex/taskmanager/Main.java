@@ -2,6 +2,9 @@ package net.yandex.taskmanager;
 import net.yandex.taskmanager.services.*;
 import net.yandex.taskmanager.model.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -18,6 +21,15 @@ public class Main {
         taskManager.createSubTask(new SubTask("secondEpicSubtask", "description??", 3)); // id 6
         taskManager.createEpic(new EpicTask("NotFirstEpic", "null")); // id 7
 
+        String[] sb = new String[6];
+        sb[0] = Integer.toString(taskManager.getTaskByID(1).getId());
+        sb[1] = TaskTypes.TASK.name();
+        System.out.println(Arrays.toString(sb));
+
+        sus(taskManager.getTaskByID(1));
+        sus(taskManager.getEpicByID(3));
+        sus(taskManager.getSubTaskByID(5));
+/*
         taskManager.getTaskByID(1);
         taskManager.getEpicByID(3);
         taskManager.getSubTaskByID(5);
@@ -60,6 +72,34 @@ public class Main {
         taskManager.createTask(new Task("Task2", "lol", TaskStatus.NEW)); // ID = 8
         taskManager.getTaskByID(8);
         System.out.println(taskManager.getHistoryManager());// [8]
+ */
+    }
+
+    private static void sus(Task task){
+        String[] line = new String[6];
+        line[0] = Integer.toString(task.getId());
+        line[2] = task.getName();
+        line[3] = String.valueOf(task.getStatus());
+        line[4] = task.getDescription();
+        // Часть элементов заполняются в зависимости от типа таски.
+        // Не смог сделать через instanceof вместе со switch
+        switch (task.getClass().getSimpleName()){
+            case "EpicTask":
+                line[1] = String.valueOf(TaskTypes.EPIC);
+                break;
+            case "SubTask":
+                SubTask newTask = (SubTask) task;
+                line[1] = String.valueOf(TaskTypes.SUBTASK);
+                line[5] = Integer.toString(newTask.getEpicID());
+                break;
+            case "Task":
+                line[1] = String.valueOf(TaskTypes.TASK);
+        }
+        String result = String.join(",", line);
+        System.out.println(result);
+
+        String[] heh = result.split(",");
+        System.out.println(heh[1]);
     }
 }
 
