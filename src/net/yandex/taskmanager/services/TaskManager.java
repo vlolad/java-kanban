@@ -31,5 +31,5 @@ public interface TaskManager {
          void updateSubTask(SubTask newSubTask);
 
          List<SubTask> getEpicSubTasks(int epicID);
-         List<Task> getHistoryManager();
+         HistoryManager getHistoryManager();
     }

@@ -19,14 +19,14 @@ public class InMemoryTaskManager implements TaskManager {
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
-    public List<Task> getHistoryManager(){
+    public HistoryManager getHistoryManager(){
         // List<Task> allHistory = new ArrayList<>(historyManager.getHistory());
         /* List<Integer> allHistoryID = new ArrayList<>();
         for (Task task : allHistory){
             allHistoryID.add(task.getId());
         }
         return allHistoryID; */ // Тут был код для проверки, чтобы выводился только массив ID задач в истории
-        return historyManager.getHistory();
+        return historyManager;
     }
 
     // Методы для вывода необходимого вида тасков в виде списка
@@ -43,6 +43,18 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<SubTask> getSubTasks(){
         return new ArrayList<>(subTasks.values());
+    }
+
+    protected Map<Integer, Task> getTasksMap(){
+        return tasks;
+    }
+
+    protected Map<Integer, EpicTask> getEpicsMap(){
+        return epics;
+    }
+
+    protected Map<Integer, SubTask> getSubTasksMap(){
+        return subTasks;
     }
 
     // Методы для удаления определенных типов таск
@@ -254,5 +266,9 @@ public class InMemoryTaskManager implements TaskManager {
     private int generateID(){
         id++;
         return id;
+    }
+
+    protected void setID(int newId){ // Метод необходим для корректной загрузки из файла
+        id = newId;
     }
 }
