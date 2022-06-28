@@ -238,7 +238,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     // Проверка стстуса Эпика
-    private void checkEpicForDone(int epicID){
+    protected void checkEpicForDone(int epicID){
         boolean checkNotAllNEW = false;
         int subTasksLength = epics.get(epicID).getSubTasksIDs().size();
         int countDONE = 0;

@@ -15,7 +15,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
         taskManager.createTask(new Task("Task1", "hehe", TaskStatus.NEW)); // id 1
         taskManager.createEpic(new EpicTask("FirstEpic", "boom")); // id 2
-        taskManager.createSubTask(new SubTask("1subtask1", "hehah", TaskStatus.DONE, 2)); // id 3
+        taskManager.createSubTask(new SubTask("1subtask1", "hehah", TaskStatus.IN_PROGRESS, 2)); // id 3
 
         taskManager.getEpicByID(2);
         taskManager.getSubTaskByID(3);
@@ -70,6 +70,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                             continue;
                         case "SUBTASK":
                             newTaskManager.getSubTasksMap().put(Integer.parseInt(record[0]), (SubTask) fromString(line));
+                            newTaskManager.getEpicsMap().get(Integer.parseInt(record[5]))
+                                    .addSubTaskID(Integer.parseInt(record[0])); // Добавляем в эпик ID его сабтаска
                             continue;
                         case "TASK":
                             newTaskManager.getTasksMap().put(Integer.parseInt(record[0]), fromString(line));
@@ -99,6 +101,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
                 newTaskManager.setID(newId);
                 br.close();
+                for (EpicTask epic : newTaskManager.getEpics()){
+                    newTaskManager.checkEpicForDone(epic.getId());
+                }
                 return newTaskManager;
             }
         } catch (IOException e) {
