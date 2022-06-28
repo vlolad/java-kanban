@@ -9,11 +9,15 @@ import java.util.StringJoiner;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    private static File SAVE;
+    private final File SAVING; // Переименовал, чтобы не смешивалось с save()
     private static final String TEMPLATE_SAVE = "id,type,name,status,description,epic\n";
 
     public FileBackedTasksManager(File file) {
-        SAVE = file;
+        SAVING = file;
+    }
+
+    public File getSAVE(){
+        return SAVING;
     }
 
     public static void main(String[] args) {
@@ -29,7 +33,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         taskManager.getTaskByID(1);
         System.out.println(taskManager.getHistoryManager().getHistory()); // 2,3,1 in history
 
-        FileBackedTasksManager newTaskManager = loadFromFile(SAVE);
+        FileBackedTasksManager newTaskManager = loadFromFile(taskManager.getSAVE());
         System.out.println(newTaskManager.getHistoryManager().getHistory()); // В истории те же 2,3,1
         System.out.println(newTaskManager.getTasks());
         System.out.println(newTaskManager.getEpics());
@@ -37,7 +41,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public void save() {
-        try (FileWriter saving = new FileWriter(SAVE)) {
+        try (FileWriter saving = new FileWriter(SAVING)) {
             saving.write(TEMPLATE_SAVE);
             for (Task task : getTasks()) {
                 saving.write(toString(task) + "\n");
@@ -58,14 +62,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTasksManager loadFromFile(File file) {
-        FileBackedTasksManager newTaskManager = new FileBackedTasksManager(SAVE);
+        FileBackedTasksManager newTaskManager = new FileBackedTasksManager(file);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             br.readLine(); // Пропускаем первую строчку
             while (br.ready()) {
                 int newId = 0; // для поиска последнего использованного ID
                 // Сначала заполняем мапы для разных видов тасков
                 String line = br.readLine();
-                if (!line.isBlank() || !line.isEmpty()) {
+                if (!line.isBlank()) {
 
                     String[] record = line.split(",");
 
@@ -269,6 +273,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private static class ManagerSaveException extends RuntimeException {
         public ManagerSaveException(String message) {
+            super(message);
         }
     }
 }
