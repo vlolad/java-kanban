@@ -55,10 +55,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     public static FileBackedTasksManager loadFromFile(File file){
         FileBackedTasksManager newTaskManager = new FileBackedTasksManager();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            System.out.println("Зашли в метод через try");
-
             br.readLine(); // Пропускаем первую строчку
-
             while (br.ready()){
                 int newId = 0; // для поиска последнего использованного ID
                 // Сначала заполняем мапы для разных видов тасков
