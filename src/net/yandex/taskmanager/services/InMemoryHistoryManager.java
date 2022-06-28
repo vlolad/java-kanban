@@ -19,7 +19,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         /*if (last != null && task.equals(last.body)){ // Если переданный объект уже последний в истории, метод отключается.
             return;
         } else {*/
-        if (task == null){
+        if (task == null) {
             return;
         }
 
