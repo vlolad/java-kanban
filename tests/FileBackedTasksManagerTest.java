@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.time.LocalDateTime;
 
 public class FileBackedTasksManagerTest extends TaskManagerTest <FileBackedTasksManager>  {
 
@@ -74,5 +75,29 @@ public class FileBackedTasksManagerTest extends TaskManagerTest <FileBackedTasks
         newTaskManager.createTask(new Task("newTest1", "sas"));
         assertEquals(4, newTaskManager.getTaskByID(4).getId(),
                 "Неверная загрузка последнего использованного ID из файла.");
+    }
+
+    @Test
+    public void SaveAndLoadTasksWithDataAndTime(){
+        getTaskManager().createTask(new Task("Task123", "hehe", TaskStatus.NEW,
+                LocalDateTime.of(2022,7,11,20,0), 30));
+        getTaskManager().createEpic(new EpicTask("FirstEpic", "boom"));
+        getTaskManager().createSubTask(new SubTask("1subtask1", "hehah", TaskStatus.IN_PROGRESS, 2,
+                LocalDateTime.of(2022,7,11,20,0), 15));
+        getTaskManager().createSubTask(new SubTask("test3", "suss", TaskStatus.NEW, 2,
+                LocalDateTime.of(2022,7,11,22,0), 60));
+
+        FileBackedTasksManager newTaskManager =  FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
+
+        assertNotNull(newTaskManager.getTaskByID(1).getStartTime(),
+                "Не было загружено поле startTime у класса Таск.");
+        LocalDateTime expDateTime = LocalDateTime.of(2022,7,11,20,30);
+        assertEquals(expDateTime, newTaskManager.getTaskByID(1).getEndTime(),
+                "Неправильно загружено и/или просчитано время старта и окончания класса Таск");
+
+        LocalDateTime expectedStartTime = LocalDateTime.of(2022,7,11,20,0);
+        LocalDateTime expectedEndTime = LocalDateTime.of(2022,7,11,23,0);
+        assertEquals(expectedStartTime, newTaskManager.getEpicByID(2).getStartTime());
+        assertEquals(expectedEndTime, newTaskManager.getEpicByID(2).getEndTime());
     }
 }
