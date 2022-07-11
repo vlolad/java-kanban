@@ -157,6 +157,7 @@ public class InMemoryTaskManager implements TaskManager {
             subTasks.put(id, subTask);
             epics.get(subTask.getEpicID()).addSubTaskID(id);
             checkEpicForDone(subTask.getEpicID());
+
             if (subTask.getStartTime() != null){
                 calculateEpicEndTime(subTask.getEpicID());
             }
@@ -198,9 +199,13 @@ public class InMemoryTaskManager implements TaskManager {
             checkEpicForDone(subTasks.get(id).getEpicID()); // Обновляем статус
             subTasks.remove(id); // Наконец удаляем сабтаск
             historyManager.remove(id);
-            if (subTasks.get(id).getStartTime() != null){
+            /*if (subTasks.get(id).getStartTime() != null){
                 calculateEpicEndTime(subTasks.get(id).getEpicID());
-            }
+            } */
+            try {
+                subTasks.get(id).getStartTime();
+                calculateEpicEndTime(subTasks.get(id).getEpicID());
+            } catch (NullPointerException ignored) {}
         } else {
             System.out.println("Subtask not exist.");
         }
