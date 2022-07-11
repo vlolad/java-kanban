@@ -6,6 +6,8 @@ import org.junit.jupiter.api.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,17 +32,23 @@ public class HistoryManagerTest extends InMemoryHistoryManager implements Histor
 
     @Test
     public void blankManagerGetHistory(){
-        assertNotNull(historyManager.getHistory());
-        assertEquals(0, historyManager.getHistory().size());
+        assertNotNull(historyManager.getHistory(),
+                "Некорректное создание пустой истории.");
+        assertEquals(0, historyManager.getHistory().size(),
+                "История не пустая при создании.");
     }
 
     @Test
     public void clearManagerGetHistory(){
         historyManager.add(new Task(1, "test", "test", TaskStatus.NEW));
-        assertEquals(1, historyManager.getHistory().size());
+        assertEquals(1, historyManager.getHistory().size(),
+                "Неверное добавление Таски в историю: Ожидалось - 1, Вывод - " +
+                        historyManager.getHistory().size());
 
         historyManager.remove(1);
-        assertEquals(0, historyManager.getHistory().size());
+        assertEquals(0, historyManager.getHistory().size(),
+                "Неверное удаление Таски из истории: Ожидалось (кол-во Таск в истории) - 0, Вывод - " +
+                        historyManager.getHistory().size());
     }
 
     //Проверка на изменение порядка при повторном добавлении задач из истории
@@ -50,13 +58,15 @@ public class HistoryManagerTest extends InMemoryHistoryManager implements Histor
 
         historyManager.add(new Task(2, "testing1", "sus", TaskStatus.IN_PROGRESS));
         historyManager.add(new Task(1, "testing2", "sus", TaskStatus.DONE));
-        setUpStreams();
-        System.out.println(historyManager.getHistory());
-        assertEquals("[Task{name= «test 3» | id=«3» | description(length)=«3» | status=«NEW»}, " +
-                "Task{name= «testing1» | id=«2» | description(length)=«3» | status=«IN_PROGRESS»}, " +
-                "Task{name= «testing2» | id=«1» | description(length)=«3» | status=«DONE»}]",
-                output.toString().trim()
-        );
+
+        ArrayList<Integer> historyIdList = new ArrayList<>();
+        for (Task task : historyManager.getHistory()){
+            historyIdList.add(task.getId());
+        }
+        ArrayList<Integer> expectedHistory = new ArrayList<>(Arrays.asList(3, 2, 1));
+
+        assertEquals(expectedHistory, historyIdList,
+                "История неверно реагирует на добавление повторяющихся Тасков.");
     }
 
     @Test
@@ -64,8 +74,8 @@ public class HistoryManagerTest extends InMemoryHistoryManager implements Histor
         fillHistory(5);
         historyManager.remove(1);
         Task task = historyManager.getHistory().get(0);
-        assertEquals("test 2", task.getName());
-        assertEquals(2, task.getId());
+        assertEquals(2, task.getId(),
+                "Неверное поведение истории при удалении задачи из начала списка.");
     }
 
     @Test
@@ -74,8 +84,8 @@ public class HistoryManagerTest extends InMemoryHistoryManager implements Histor
         historyManager.remove(5);
         Task task = historyManager.getHistory()
                 .get(historyManager.getHistory().size()-1);
-        assertEquals("test 4", task.getName());
-        assertEquals(4, task.getId());
+        assertEquals(4, task.getId(),
+                "Неверное поведение истории при удалении задачи с конца списка.");
     }
 
     @Test
@@ -85,11 +95,15 @@ public class HistoryManagerTest extends InMemoryHistoryManager implements Histor
         Task task1 = historyManager.getHistory().get(1);
         Task task2 = historyManager.getHistory().get(2);
 
-        assertEquals(2, task1.getId());
-        assertEquals(4, task2.getId());
-        assertEquals("test 2", task1.getName());
-        assertEquals("test 4", task2.getName());
-        assertEquals(4, historyManager.getHistory().size());
+        assertEquals(4, historyManager.getHistory().size(),
+                "Неверный размер истории после удаления задачи из центра: "
+        + " Ожидалось - 4, Вывод - " + historyManager.getHistory().size());
+        assertEquals(2, task1.getId(),
+                "Неверное поведение истории при удалении задачи из центра: " +
+                "Таск перед удаляемой задачей содержит неверный ID - " + task1.getId() + "(Ожидалось - 2)");
+        assertEquals(4, task2.getId(),
+                "Неверное поведение истории при удалении задачи из центра: " +
+                        "Таск после удаляемой задачей содержит неверный ID - " + task2.getId() + "(Ожидалось - 4)");
     }
 
     private void fillHistory(int value){
