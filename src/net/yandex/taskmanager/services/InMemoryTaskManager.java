@@ -45,15 +45,18 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(subTasks.values());
     }
 
-    protected Map<Integer, Task> getTasksMap(){
+    @Override
+    public Map<Integer, Task> getTasksMap(){
         return tasks;
     }
 
-    protected Map<Integer, EpicTask> getEpicsMap(){
+    @Override
+    public Map<Integer, EpicTask> getEpicsMap(){
         return epics;
     }
 
-    protected Map<Integer, SubTask> getSubTasksMap(){
+    @Override
+    public Map<Integer, SubTask> getSubTasksMap(){
         return subTasks;
     }
 
@@ -140,6 +143,7 @@ public class InMemoryTaskManager implements TaskManager {
         int id = generateID();
         epic.setId(id);
         epics.put(id, epic);
+        checkEpicForDone(id);
     }
 
     @Override

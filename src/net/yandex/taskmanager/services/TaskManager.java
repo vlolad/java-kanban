@@ -3,12 +3,18 @@ package net.yandex.taskmanager.services;
 import net.yandex.taskmanager.model.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TaskManager {
 
          List<Task> getTasks();
          List<EpicTask> getEpics();
          List<SubTask> getSubTasks();
+
+         //Используются в FileBackedTasksManager
+         Map<Integer, Task> getTasksMap();
+         Map<Integer, EpicTask> getEpicsMap();
+         Map<Integer, SubTask> getSubTasksMap();
 
          void clearTasks();
          void clearEpics();
