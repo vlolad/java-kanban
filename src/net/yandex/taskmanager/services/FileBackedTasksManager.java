@@ -26,7 +26,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
         taskManager.createTask(new Task("Task123", "hehe", TaskStatus.NEW)); // id 1
         taskManager.createEpic(new EpicTask("FirstEpic", "boom")); // id 2
-        taskManager.createSubTask(new SubTask("1subtask1", "hehah", TaskStatus.IN_PROGRESS, 2)); // id 3
+        taskManager.createSubTask(new SubTask("1subtask1", "hehah", TaskStatus.IN_PROGRESS, 2));// id 3
 
         taskManager.getEpicByID(2);
         taskManager.getSubTaskByID(3);
@@ -34,10 +34,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println(taskManager.getHistoryManager().getHistory()); // 2,3,1 in history
 
         FileBackedTasksManager newTaskManager = loadFromFile(taskManager.getSAVE());
+        System.out.println("in main new id = " + newTaskManager.getId());
         System.out.println(newTaskManager.getHistoryManager().getHistory()); // В истории те же 2,3,1
         System.out.println(newTaskManager.getTasks());
         System.out.println(newTaskManager.getEpics());
-        System.out.println(newTaskManager.getSubTasks());*/
+        System.out.println(newTaskManager.getSubTasks());
+        newTaskManager.createTask(new Task("Task456", "hehe", TaskStatus.NEW)); // id 4
+        System.out.println(newTaskManager.getTaskByID(4));*/
     }
 
     public void save() {
@@ -64,14 +67,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager newTaskManager = new FileBackedTasksManager(file);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            int newId = 0; // для поиска последнего использованного ID
             br.readLine(); // Пропускаем первую строчку
             while (br.ready()) {
-                int newId = 0; // для поиска последнего использованного ID
                 // Сначала заполняем мапы для разных видов тасков
                 String line = br.readLine();
                 if (!line.isBlank()) {
-
                     String[] record = line.split(",");
+
+                    if (Integer.parseInt(record[0]) > newId) {
+                        newId = Integer.parseInt(record[0]);
+                    } // запоминаем последнее присвоенное значение ID
 
                     switch (TaskTypes.valueOf(record[1])) {
                         case EPIC:
@@ -90,11 +96,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                             newTaskManager.getTasksMap().put(Integer.parseInt(record[0]), fromString(line));
                             continue;
                     }
-                    // запоминаем последнее присвоенное значение ID
-                    if (Integer.parseInt(record[0]) > newId) {
-                        newId = Integer.parseInt(record[0]);
-                    }
-                    //System.out.println("Наибольший ID сейчас: " + newId);
+
                 } else {
                     line = br.readLine(); // Пропускаем пустую строку
 
@@ -118,6 +120,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 for (EpicTask epic : newTaskManager.getEpics()) {
                     newTaskManager.checkEpicForDone(epic.getId());
                 }
+
                 return newTaskManager;
             }
         } catch (IOException e) {
