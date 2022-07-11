@@ -1,11 +1,13 @@
 package net.yandex.taskmanager.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EpicTask extends Task {
 
     private List<Integer> subTasksIDs = new ArrayList<>();
+    private LocalDateTime endTime;
     // Конструктор для создания эпика
     public EpicTask(String name, String description){
         super(name, description);
@@ -47,5 +49,20 @@ public class EpicTask extends Task {
 
     public void setSubTasksIDs(List<Integer> subTasksIDs) {
         this.subTasksIDs = subTasksIDs;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void clearDateTime(){
+        this.endTime = null;
+        setStartTime(null);
+        setDuration(0);
     }
 }

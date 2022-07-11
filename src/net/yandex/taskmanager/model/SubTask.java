@@ -1,5 +1,7 @@
 package net.yandex.taskmanager.model;
 
+import java.time.LocalDateTime;
+
 public class SubTask extends Task {
 
     private Integer epicID;
@@ -8,14 +10,30 @@ public class SubTask extends Task {
         super(name, description);
         this.epicID = epicID;
     }
+
+    public SubTask(String name, String description, int epicID, LocalDateTime startTime, long duration){
+        super(name, description, startTime, duration);
+        this.epicID = epicID;
+    }
     // Создание новой сабтаск (со статусом)
     public SubTask(String name, String description, TaskStatus status, int epicID){
         super(name, description, status);
         this.epicID = epicID;
     }
+
+    public SubTask(String name, String description, TaskStatus status, int epicID, LocalDateTime startTime, long duration){
+        super(name, description, status, startTime, duration);
+        this.epicID = epicID;
+    }
     // Изменение сабтаски
     public SubTask(int id, String name, String description, TaskStatus status, int epicID){
         super(id, name, description, status);
+        this.epicID = epicID;
+    }
+
+    public SubTask(int id, String name, String description, TaskStatus status,
+                   int epicID, LocalDateTime startTime, long duration){
+        super(id, name, description, status, startTime, duration);
         this.epicID = epicID;
     }
 

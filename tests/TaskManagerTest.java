@@ -5,6 +5,8 @@ import org.junit.jupiter.api.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -420,4 +422,65 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertEquals("Subtask or Epic with this ID is not exist.", output.toString().trim(),
                 "Неверный вывод updateSubTask(), если Эпик не существует.");
     }
+
+    @Test
+    public void createNewTaskWithDataAndTime(){
+        taskManager.createTask(new Task("test1", "sus",
+                LocalDateTime.of(2022, 7, 10, 9, 0), 540));
+
+        LocalDateTime expectedDateTime = LocalDateTime.of(2022, 7, 10, 18, 0);
+        assertEquals(expectedDateTime, taskManager.getTaskByID(1).getEndTime(),
+                "Метод getEndTime() неправильно рассчитываем время окончания задачи в классе Task.");
+    }
+
+    @Test
+    public void createNewSubTaskWithDataAndTime(){
+        taskManager.createEpic(new EpicTask("test1", "testing"));
+        taskManager.createSubTask(new SubTask("test2", "sus", 1,
+                LocalDateTime.of(2022, 7, 10, 9, 15), 525));
+
+        LocalDateTime expDateTime = LocalDateTime.of(2022, 7, 10, 18, 0);
+        assertEquals(expDateTime, taskManager.getSubTaskByID(2).getEndTime(),
+                "Метод getEndTime() неправильно рассчитываем время окончания задачи в классе SubTask.");
+    }
+
+    @Test
+    public void createNewEpicWithDataAndTime(){
+        taskManager.createEpic(new EpicTask("test1", "testing"));
+        taskManager.createSubTask(new SubTask("test2", "sus", 1,
+                LocalDateTime.of(2022, 7, 10, 9, 15), 525));
+        taskManager.createSubTask(new SubTask("test3", "sus", 1,
+                LocalDateTime.of(2022, 7, 11, 21, 30), 90));
+
+        assertEquals(taskManager.getSubTaskByID(2).getStartTime(),
+                taskManager.getEpicByID(1).getStartTime(),
+                "Неверно определяется statTime в Эпике при создании новой СабТаск");
+        assertEquals(taskManager.getSubTaskByID(3).getEndTime(),
+                taskManager.getEpicByID(1).getEndTime(),
+                "Неверно определяется endTime в Эпике при создании новой СабТаск");
+        long expectedDuration = Duration.between(
+                taskManager.getSubTaskByID(2).getStartTime(), taskManager.getSubTaskByID(3).getEndTime())
+                .toMinutes();
+        assertEquals(expectedDuration, taskManager.getEpicByID(1).getDuration(),
+                "Неверно определяется duration в Эпике при создании новой СабТаск");
+
+        taskManager.clearSubTasks();
+        assertNull(taskManager.getEpicByID(1).getStartTime(),
+                "Не обнуляется startTime в Эпике при вызове метода clearSubTasks()");
+    }
+
+    @Test
+    public void updateSubTaskAndUpdateDateInEpic(){
+        taskManager.createEpic(new EpicTask("test1", "testing"));
+        taskManager.createSubTask(new SubTask("test2", "sus", 1,
+                LocalDateTime.of(2022, 7, 10, 9, 15), 525));
+
+        taskManager.updateSubTask(new SubTask(2, "test2", "sus", TaskStatus.DONE, 1,
+                LocalDateTime.of(2022, 6, 9, 15, 40), 20));
+
+        LocalDateTime expDateTime = LocalDateTime.of(2022, 6, 9, 16, 0);
+        assertEquals(expDateTime, taskManager.getEpicByID(1).getEndTime(),
+                "Неверно высчитывается endTime у Эпика при обновлении Сабтаск в нём.");
+    }
+
 }

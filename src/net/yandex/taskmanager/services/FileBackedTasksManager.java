@@ -3,6 +3,7 @@ package net.yandex.taskmanager.services;
 import net.yandex.taskmanager.model.*;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -10,7 +11,7 @@ import java.util.StringJoiner;
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final File SAVING; // Переименовал, чтобы не смешивалось с save()
-    private static final String TEMPLATE_SAVE = "id,type,name,status,description,epic\n";
+    private static final String TEMPLATE_SAVE = "id,type,name,status,description,epic,startTime,duration\n";
 
     public FileBackedTasksManager(File file) {
         SAVING = file;
@@ -32,15 +33,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         taskManager.getSubTaskByID(3);
         taskManager.getTaskByID(1);
         System.out.println(taskManager.getHistoryManager().getHistory()); // 2,3,1 in history
+        taskManager.createSubTask(new SubTask("test3", "suss", TaskStatus.NEW, 2,
+                LocalDateTime.of(2022,7,11,22,0), 60));
+        System.out.println(taskManager.getEpicByID(2).getEndTime());
 
         FileBackedTasksManager newTaskManager = loadFromFile(taskManager.getSAVE());
-        System.out.println("in main new id = " + newTaskManager.getId());
         System.out.println(newTaskManager.getHistoryManager().getHistory()); // В истории те же 2,3,1
         System.out.println(newTaskManager.getTasks());
         System.out.println(newTaskManager.getEpics());
         System.out.println(newTaskManager.getSubTasks());
         newTaskManager.createTask(new Task("Task456", "hehe", TaskStatus.NEW)); // id 4
-        System.out.println(newTaskManager.getTaskByID(4));*/
+        System.out.println(newTaskManager.getTaskByID(5));
+        System.out.println(taskManager.getEpicByID(2).getEndTime());*/
     }
 
     public void save() {
@@ -91,6 +95,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                             newTaskManager.getSubTasksMap().put(subTask.getId(), subTask);
                             newTaskManager.getEpicsMap().get(subTask.getEpicID())
                                     .addSubTaskID(subTask.getId()); // Добавляем в эпик ID его сабтаска
+                            if (subTask.getStartTime() != null){
+                                newTaskManager.calculateEpicEndTime(subTask.getEpicID());
+                            }
                             continue;
                         case TASK:
                             newTaskManager.getTasksMap().put(Integer.parseInt(record[0]), fromString(line));
@@ -223,11 +230,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private String toString(Task task) {
-        String[] line = new String[6];
+        String[] line = new String[8];
         line[0] = Integer.toString(task.getId());
         line[2] = task.getName();
         line[3] = String.valueOf(task.getStatus());
         line[4] = task.getDescription();
+
         // Часть элементов заполняются в зависимости от типа таски.
         // Не смог сделать через instanceof вместе со switch
         if (task instanceof EpicTask) {
@@ -240,6 +248,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             line[1] = String.valueOf(TaskTypes.TASK);
         }
 
+        if (task.getStartTime() != null){
+            line[6] = task.getStartTime().toString();
+            line[7] = String.valueOf(task.getDuration());
+        }
+
         return String.join(",", line);
     }
 
@@ -250,10 +263,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             case EPIC:
                 return new EpicTask(Integer.parseInt(line[0]), line[2], line[4]);
             case SUBTASK:
-                return new SubTask(Integer.parseInt(line[0]), line[2], line[4],
-                        TaskStatus.valueOf(line[3]), Integer.parseInt(line[5]));
+                if (!"null".equals(line[6])){
+                    return new SubTask(Integer.parseInt(line[0]), line[2], line[4],
+                            TaskStatus.valueOf(line[3]), Integer.parseInt(line[5]),
+                            LocalDateTime.parse(line[6]), Long.parseLong(line[7]));
+                } else {
+                    return new SubTask(Integer.parseInt(line[0]), line[2], line[4],
+                            TaskStatus.valueOf(line[3]), Integer.parseInt(line[5]));
+                }
             case TASK:
-                return new Task(Integer.parseInt(line[0]), line[2], line[4], TaskStatus.valueOf(line[3]));
+                if (!"null".equals(line[6])){
+                    return new Task(Integer.parseInt(line[0]), line[2], line[4], TaskStatus.valueOf(line[3]),
+                            LocalDateTime.parse(line[6]), Long.parseLong(line[7]));
+                } else {
+                    return new Task(Integer.parseInt(line[0]), line[2], line[4], TaskStatus.valueOf(line[3]));
+                }
         }
         return null;
     }

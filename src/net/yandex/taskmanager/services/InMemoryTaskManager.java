@@ -2,6 +2,8 @@ package net.yandex.taskmanager.services;
 
 import net.yandex.taskmanager.model.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,6 +93,7 @@ public class InMemoryTaskManager implements TaskManager {
         subTasks.clear();
         for (EpicTask epic : epics.values()){ // Также очищаются списки подзадач в эпиках и идет проверка их статуса
             epic.clearSubTasksIDs();
+            epic.clearDateTime(); // Без Сабтасков EndTime не рассчитывается
             checkEpicForDone(epic.getId());
         }
     }
@@ -154,6 +157,9 @@ public class InMemoryTaskManager implements TaskManager {
             subTasks.put(id, subTask);
             epics.get(subTask.getEpicID()).addSubTaskID(id);
             checkEpicForDone(subTask.getEpicID());
+            if (subTask.getStartTime() != null){
+                calculateEpicEndTime(subTask.getEpicID());
+            }
         } else {
             System.out.println("There is no epic with ID " + subTask.getEpicID());
         }
@@ -192,6 +198,9 @@ public class InMemoryTaskManager implements TaskManager {
             checkEpicForDone(subTasks.get(id).getEpicID()); // Обновляем статус
             subTasks.remove(id); // Наконец удаляем сабтаск
             historyManager.remove(id);
+            if (subTasks.get(id).getStartTime() != null){
+                calculateEpicEndTime(subTasks.get(id).getEpicID());
+            }
         } else {
             System.out.println("Subtask not exist.");
         }
@@ -221,6 +230,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTasks.containsKey(newSubTask.getId()) && epics.containsKey(newSubTask.getEpicID())){
             subTasks.put(newSubTask.getId(), newSubTask);
             checkEpicForDone(newSubTask.getEpicID());
+            if (newSubTask.getStartTime() != null){
+                calculateEpicEndTime(newSubTask.getEpicID());
+            }
         } else {
             System.out.println("Subtask or Epic with this ID is not exist.");
         }
@@ -241,7 +253,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    // Проверка стстуса Эпика
+    // Проверка стстуса Эпика и изменение его дат начала-окончания
     protected void checkEpicForDone(int epicID){
         boolean checkNotAllNEW = false;
         int subTasksLength = epics.get(epicID).getSubTasksIDs().size();
@@ -274,5 +286,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected void setID(int newId){ // Метод необходим для корректной загрузки из файла
         id = newId;
+    }
+
+    public void calculateEpicEndTime(int epicID){
+        LocalDateTime earliestDate = LocalDateTime.MAX;
+        LocalDateTime latestDate = LocalDateTime.MIN;
+        long resultDuration;
+
+        for (SubTask sub : getEpicSubTasks(epicID)){
+            if (sub.getStartTime() != null) {
+                if (sub.getStartTime().isBefore(earliestDate)) earliestDate = sub.getStartTime();
+                if (sub.getEndTime().isAfter(latestDate)) latestDate = sub.getEndTime();
+            }
+        }
+        resultDuration = Duration.between(earliestDate, latestDate).toMinutes();
+
+        epics.get(epicID).setStartTime(earliestDate);
+        epics.get(epicID).setDuration(resultDuration);
+        epics.get(epicID).setEndTime(latestDate);
     }
 }

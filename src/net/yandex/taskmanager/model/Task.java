@@ -1,10 +1,15 @@
 package net.yandex.taskmanager.model;
 
+import java.time.LocalDateTime;
+
 public class Task {
     private int id;
     private String name;
     private String description;
     private TaskStatus status;
+
+    private long duration;
+    private LocalDateTime startTime;
 
     public Task() { }
     // Конструктор для создания новой таски (без статуса)
@@ -13,11 +18,27 @@ public class Task {
         this.name = name;
         this.description = description;
     }
+
+    public Task(String name, String description, LocalDateTime startTime, long duration){
+        status = TaskStatus.NEW;
+        this.name = name;
+        this.description = description;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
     // Конструктор для создания новой таски (со статусом)
     public Task(String name, String description, TaskStatus status){
         this.name = name;
         this.description = description;
         this.status = status;
+    }
+
+    public Task(String name, String description, TaskStatus status, LocalDateTime startTime, long duration){
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
     }
     // Конструкторы для изменения существующей таски
     public Task(int id,String name, String description, TaskStatus status){
@@ -25,6 +46,15 @@ public class Task {
         this.status = status;
         this.name = name;
         this.description = description;
+    }
+
+    public Task(int id,String name, String description, TaskStatus status, LocalDateTime startTime, long duration){
+        this.id = id;
+        this.status = status;
+        this.name = name;
+        this.description = description;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     @Override
@@ -69,5 +99,25 @@ public class Task {
 
     public void setStatus(TaskStatus status) {
         this.status = status;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime(){
+        return startTime.plusMinutes(duration);
     }
 }

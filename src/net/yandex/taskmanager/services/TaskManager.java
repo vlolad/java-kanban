@@ -38,4 +38,6 @@ public interface TaskManager {
 
          List<SubTask> getEpicSubTasks(int epicID);
          HistoryManager getHistoryManager();
+
+         void calculateEpicEndTime(int epicID);
     }
