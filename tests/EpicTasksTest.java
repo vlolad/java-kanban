@@ -22,23 +22,26 @@ public class EpicTasksTest {
     public void checkEpicForDoneWithEmptyList(){
         taskManager.clearSubTasks(); // чтобы у эпика точно был пустой список сабтасков
 
-        assertEquals(0, taskManager.getEpicSubTasks(1).size());
+        assertEquals(0, taskManager.getEpicSubTasks(1).size(),
+                "Список сабтасков у Эпика не пустой.");
     }
 
     @Test
     public void checkEpicForDoneWithAllNEW(){
         fillWithSubs(3, TaskStatus.NEW);
 
-        assertEquals(3, taskManager.getEpicSubTasks(1).size());
-        assertEquals(TaskStatus.NEW, taskManager.getEpicByID(1).getStatus());
+        assertEquals(3, taskManager.getEpicSubTasks(1).size(),
+                "В Эпик неверно добавляются задачи.");
+        assertEquals(TaskStatus.NEW, taskManager.getEpicByID(1).getStatus(),
+                "У Эпика неверно рассчитывается статус, когда все сабтаски NEW");
     }
 
     @Test
     public void checkEpicForDoneWithAllDONE(){
         fillWithSubs(5, TaskStatus.DONE);
 
-        assertEquals(5, taskManager.getEpicSubTasks(1).size());
-        assertEquals(TaskStatus.DONE, taskManager.getEpicByID(1).getStatus());
+        assertEquals(TaskStatus.DONE, taskManager.getEpicByID(1).getStatus(),
+                "У Эпика неверно рассчитывается статус, когда все сабтаски DONE");
     }
 
     @Test
@@ -46,16 +49,16 @@ public class EpicTasksTest {
         fillWithSubs(2, TaskStatus.NEW);
         fillWithSubs(3, TaskStatus.DONE);
 
-        assertEquals(5, taskManager.getEpicSubTasks(1).size());
-        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpicByID(1).getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpicByID(1).getStatus(),
+                "У Эпика неверно рассчитывается статус, когда присутствуют сабтаски NEW и DONE");
     }
 
     @Test
     public void checkEpicForDoneWithAllINPROGRESS(){
         fillWithSubs(5, TaskStatus.IN_PROGRESS);
 
-        assertEquals(5, taskManager.getEpicSubTasks(1).size());
-        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpicByID(1).getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpicByID(1).getStatus(),
+                "У Эпика неверно рассчитывается статус, когда все сабтаски IN_PROGRESS");
     }
 
     private void fillWithSubs(int num, TaskStatus status){

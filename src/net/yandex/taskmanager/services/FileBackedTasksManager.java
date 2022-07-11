@@ -22,7 +22,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static void main(String[] args) {
 
-        FileBackedTasksManager taskManager = new FileBackedTasksManager(new File("save.csv"));
+        /*FileBackedTasksManager taskManager = new FileBackedTasksManager(new File("save.csv"));
 
         taskManager.createTask(new Task("Task123", "hehe", TaskStatus.NEW)); // id 1
         taskManager.createEpic(new EpicTask("FirstEpic", "boom")); // id 2
@@ -37,7 +37,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println(newTaskManager.getHistoryManager().getHistory()); // В истории те же 2,3,1
         System.out.println(newTaskManager.getTasks());
         System.out.println(newTaskManager.getEpics());
-        System.out.println(newTaskManager.getSubTasks());
+        System.out.println(newTaskManager.getSubTasks());*/
     }
 
     public void save() {

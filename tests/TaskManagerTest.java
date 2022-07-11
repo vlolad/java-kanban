@@ -34,68 +34,83 @@ abstract class TaskManagerTest <T extends TaskManager> {
     public void createTaskTesting(){
         taskManager.createTask(new Task("name1", "desc1"));
 
-        assertEquals("name1", taskManager.getTaskByID(1).getName());
-        assertEquals(TaskStatus.NEW, taskManager.getTaskByID(1).getStatus());
+        assertEquals("name1", taskManager.getTaskByID(1).getName(),
+                "В Таск неверно добавляется поле Name.");
+        assertEquals(TaskStatus.NEW, taskManager.getTaskByID(1).getStatus(),
+                "Таске неверно присваивается статус по-умолчанию.");
 
         taskManager.createTask(new Task("name2", "desc2", TaskStatus.IN_PROGRESS));
 
-        assertEquals("name2", taskManager.getTaskByID(2).getName());
-        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getTaskByID(2).getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getTaskByID(2).getStatus(),
+                "Таске неверно присваивается статус конструктором.");
     }
 
     @Test
     public void createEpicTesting(){
         taskManager.createEpic(new EpicTask("name1", "desc1"));
 
-        assertEquals("name1", taskManager.getEpicByID(1).getName());
-        assertEquals(TaskStatus.NEW, taskManager.getEpicByID(1).getStatus());
+        assertEquals("name1", taskManager.getEpicByID(1).getName(),
+                "В Эпик неверно добавляется поле Name.");
+        assertEquals(TaskStatus.NEW, taskManager.getEpicByID(1).getStatus(),
+                "Эпику неверно присваивается статус по-умолчанию.");
     }
 
     @Test
     public void createSubTaskTestingAllOk(){
-        taskManager.createEpic(new EpicTask(1, "test", "testing"));
-        taskManager.createSubTask(new SubTask(2, "sub2", "newSub", TaskStatus.NEW, 1));
+        taskManager.createEpic(new EpicTask("test", "testing"));
+        taskManager.createSubTask(new SubTask("sub2", "newSub", 1));
 
 
-        assertEquals("sub2", taskManager.getSubTaskByID(2).getName());
-        assertEquals(TaskStatus.NEW, taskManager.getSubTaskByID(2).getStatus());
-        assertEquals(TaskStatus.NEW, taskManager.getEpicByID(1).getStatus());
+        assertEquals("sub2", taskManager.getSubTaskByID(2).getName(),
+                "В Сабтаск неверно добавляется поле Name.");
+        assertEquals(TaskStatus.NEW, taskManager.getSubTaskByID(2).getStatus(),
+                "В Сабтаск неверно добавляется статус по-умолчанию");
+        assertEquals(TaskStatus.NEW, taskManager.getEpicByID(1).getStatus(),
+                "Для Эпика неверно рассчитывается статус при одной Сабтаске со статусом NEW");
 
-        taskManager.createSubTask(new SubTask(3, "sub3", "newSub", TaskStatus.DONE, 1));
+        taskManager.createSubTask(new SubTask("sub3", "newSub", TaskStatus.DONE, 1));
 
-        assertEquals("sub3", taskManager.getSubTaskByID(3).getName());
-        assertEquals(TaskStatus.DONE, taskManager.getSubTaskByID(3).getStatus());
-        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpicByID(1).getStatus());
-
-        assertEquals(2, taskManager.getEpicsMap().get(1).getSubTasksIDs().size());
+        assertEquals(TaskStatus.DONE, taskManager.getSubTaskByID(3).getStatus(),
+                "В Сабтаск неверно добавляется статус конструктором");
+        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpicByID(1).getStatus(),
+                "В Эпике неверно обновляется статус при сабтасках NEW и DONE");
+        assertEquals(2, taskManager.getEpicsMap().get(1).getSubTasksIDs().size(),
+                "В Эпик неверно добавляются сабтаски: неправильное количество сабтасков в спике subTasksIDs");
     }
     @Test
     public void createSubTaskTestingNoSuchEpic(){
         setUpStreams();
         taskManager.createSubTask(new SubTask(2, "sub2", "newSub", TaskStatus.NEW, 1));
-        assertEquals("There is no epic with ID 1", output.toString().trim());
+        assertEquals("There is no epic with ID 1", output.toString().trim(),
+                "Неправильный вывод при попытке создать Сабтаск у несуществующего Эпика");
     }
 
     @Test
     public void getMethodsTesting(){
-        assertEquals(0, taskManager.getEpics().size());
-        assertEquals(0, taskManager.getTasks().size());
-        assertEquals(0, taskManager.getSubTasks().size());
-        assertEquals(0, taskManager.getEpicsMap().size());
-        assertEquals(0, taskManager.getTasksMap().size());
-        assertEquals(0, taskManager.getSubTasksMap().size());
+        assertEquals(0, taskManager.getEpics().size(), "Неверный стандартный размер хранилища");
+        assertEquals(0, taskManager.getTasks().size(), "Неверный стандартный размер хранилища");
+        assertEquals(0, taskManager.getSubTasks().size(), "Неверный стандартный размер хранилища");
+        assertEquals(0, taskManager.getEpicsMap().size(), "Неверный стандартный размер мапы");
+        assertEquals(0, taskManager.getTasksMap().size(), "Неверный стандартный размер мапы");
+        assertEquals(0, taskManager.getSubTasksMap().size(), "Неверный стандартный размер мапы");
 
         taskManager.createEpic(new EpicTask(1, "test", "testing"));
         taskManager.createSubTask(new SubTask(2, "sub1", "newSub", TaskStatus.DONE, 1));
         taskManager.createSubTask(new SubTask(3, "sub1", "newSub", TaskStatus.NEW, 1));
         taskManager.createTask(new Task(4, "testTask", "subs", TaskStatus.IN_PROGRESS));
 
-        assertEquals(1, taskManager.getEpics().size());
-        assertEquals(1, taskManager.getTasks().size());
-        assertEquals(2, taskManager.getSubTasks().size());
-        assertEquals(1, taskManager.getEpicsMap().size());
-        assertEquals(1, taskManager.getTasksMap().size());
-        assertEquals(2, taskManager.getSubTasksMap().size());
+        assertEquals(1, taskManager.getEpics().size(),
+                "Неверный размер хранилища Эпиков: Ожидалось - 1, Вывод - " + taskManager.getEpics().size());
+        assertEquals(1, taskManager.getTasks().size(),
+                "Неверный размер хранилища Тасков: Ожидалось - 1, Вывод - " + taskManager.getTasks().size());
+        assertEquals(2, taskManager.getSubTasks().size(),
+                "Неверный размер хранилища Сабтасков: Ожидалось - 2, Вывод - " + taskManager.getSubTasks().size());
+        assertEquals(1, taskManager.getEpicsMap().size(),
+                "Неверный размер мапы Эпиков: Ожидалось - 1, Вывод - " + taskManager.getEpicsMap().size());
+        assertEquals(1, taskManager.getTasksMap().size(),
+                "Неверный размер мапы Тасков: Ожидалось - 1, Вывод - " + taskManager.getTasksMap().size());
+        assertEquals(2, taskManager.getSubTasksMap().size(),
+                "Неверный размер мапы Тасков: Ожидалось - 2, Вывод - " + taskManager.getSubTasksMap().size());
     }
 
     @Test
@@ -106,14 +121,20 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(new Task(4, "testTask", "subs", TaskStatus.IN_PROGRESS));
 
         taskManager.getTaskByID(4);
-        assertEquals(1, taskManager.getHistoryManager().getHistory().size());
+        assertEquals(1, taskManager.getHistoryManager().getHistory().size(),
+                "Неверный размер истории при одном вызове Таск: Ожидалось 1, Вывод - "
+                        + taskManager.getHistoryManager().getHistory().size());
 
         taskManager.getEpicByID(1);
-        assertEquals(2, taskManager.getHistoryManager().getHistory().size());
+        assertEquals(2, taskManager.getHistoryManager().getHistory().size(),
+                "Неверный размер истории при вызове Так и Эпик: Ожидалось 2, Вывод - "
+                        + taskManager.getHistoryManager().getHistory().size());
 
         taskManager.getSubTaskByID(2);
         taskManager.getSubTaskByID(3);
-        assertEquals(4, taskManager.getHistoryManager().getHistory().size());
+        assertEquals(4, taskManager.getHistoryManager().getHistory().size(),
+                "Неверный размер истории при вызове Таск, Эпик и двух Сабтасков: Ожидалось 4, Вывод - "
+                        + taskManager.getHistoryManager().getHistory().size());
     }
 
     @Test
@@ -125,9 +146,10 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.getTaskByID(2);
 
         taskManager.clearTasks();
-        assertEquals(0, taskManager.getTasks().size());
-        assertEquals(0, taskManager.getTasksMap().size());
-        assertEquals(0, taskManager.getHistoryManager().getHistory().size());
+        assertEquals(0, taskManager.getTasksMap().size(),
+                "Мапа Тасков не отчищается при вызове метода clearTasks()");
+        assertEquals(0, taskManager.getHistoryManager().getHistory().size(),
+                "Из истории не удаляются просмотренные Таски при вызове метода clearTasks()");
     }
 
     @Test
@@ -143,11 +165,12 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.getSubTaskByID(4);
 
         taskManager.clearEpics();
-        assertEquals(0, taskManager.getEpics().size());
-        assertEquals(0, taskManager.getEpicsMap().size());
-        assertEquals(0, taskManager.getSubTasks().size());
-        assertEquals(0, taskManager.getSubTasksMap().size());
-        assertEquals(0, taskManager.getHistoryManager().getHistory().size());
+        assertEquals(0, taskManager.getEpicsMap().size(),
+                "Мапа Эпиков не отчищается при вызове метода clearEpics()");
+        assertEquals(0, taskManager.getSubTasksMap().size(),
+                "Мапа Сабтасков не отчищается при вызове метода clearEpics()");
+        assertEquals(0, taskManager.getHistoryManager().getHistory().size(),
+                "Из истории не удаляются просмотренные Эпики и Сабтаски при вызове метода clearEpics()");
     }
 
     @Test
@@ -164,11 +187,13 @@ abstract class TaskManagerTest <T extends TaskManager> {
 
         taskManager.clearSubTasks();
 
-        assertEquals(0, taskManager.getSubTasks().size());
-        assertEquals(0, taskManager.getSubTasksMap().size());
-        assertEquals(2, taskManager.getHistoryManager().getHistory().size()); // require 2
-        assertEquals(TaskStatus.NEW, taskManager.getEpicByID(1).getStatus());
-        assertEquals(TaskStatus.NEW, taskManager.getEpicByID(2).getStatus());
+        assertEquals(0, taskManager.getSubTasksMap().size(),
+                "Мапа Сабтасков не отчищается при вызове метода clearSubTasks()");
+        assertEquals(2, taskManager.getHistoryManager().getHistory().size(),
+                "Неверный вывод истории после вывода метода clearSubTasks(): Ожидалось - 2, Вывод - " +
+                        taskManager.getHistoryManager().getHistory().size()); // require 2
+        assertEquals(TaskStatus.NEW, taskManager.getEpicByID(1).getStatus(),
+                "Неверный расчет статуса Эпика после вызова метода clearSubTasks()");
     }
 
     @Test
@@ -189,7 +214,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
     public void getTasksByIdTestingNoSuchId(){
         setUpStreams();
         assertNull(taskManager.getTaskByID(99));
-        assertEquals("Task not found.", output.toString().trim());
+        assertEquals("Task not found.", output.toString().trim(),
+                "Неверный вывод getTaskByID(), если Таск с заданным ID не существует");
     }
 
     @Test
@@ -211,7 +237,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
     public void getEpicByIdTestingNoSuchId(){
         setUpStreams();
         assertNull(taskManager.getEpicByID(99));
-        assertEquals("Epic not found.", output.toString().trim());
+        assertEquals("Epic not found.", output.toString().trim(),
+                "Неверный вывод метода getEpicByID(), если Эпик с заданным ID не существует");
     }
 
     @Test
@@ -233,7 +260,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
     public void getSubTaskByIdTestingNoSuchId(){
         setUpStreams();
         assertNull(taskManager.getSubTaskByID(99));
-        assertEquals("Subtask not found.", output.toString().trim());
+        assertEquals("Subtask not found.", output.toString().trim(),
+                "Неверный вывод getSubTaskByID(), если Сабтаск с заданным ID не существует");
     }
 
     @Test
@@ -244,14 +272,16 @@ abstract class TaskManagerTest <T extends TaskManager> {
         List<SubTask> subTakList = List.of(
                 (SubTask) taskManager.getSubTaskByID(2), (SubTask) taskManager.getSubTaskByID(3));
 
-        assertEquals(subTakList, taskManager.getEpicSubTasks(1));
+        assertEquals(subTakList, taskManager.getEpicSubTasks(1),
+                "Метод getEpicSubTasks() неверно возвращает Сабтаски из заданного Эпика");
     }
 
     @Test
     public void getEpicSubTaskIdsNoSuchId(){
         setUpStreams();
         taskManager.getEpicSubTasks(1);
-        assertEquals("Cannot find EpicTask by this ID.", output.toString().trim());
+        assertEquals("Cannot find EpicTask by this ID.", output.toString().trim(),
+                "Неверный вывод метода getEpicSubTasks(), если Эпик с заданным ID не существует");
     }
 
     @Test
@@ -259,14 +289,16 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(new Task(1, "testTask1", "subs", TaskStatus.NEW));
         taskManager.deleteTaskByID(1);
 
-        assertEquals(0, taskManager.getTasks().size());
+        assertEquals(0, taskManager.getTasks().size(),
+                "Таск не удаляется из хранилища при попытке удаления.");
     }
 
     @Test
     public void deleteTaskByIdTestingNoSuchTask(){
         setUpStreams();
         taskManager.deleteTaskByID(1);
-        assertEquals("Task not exist.", output.toString().trim());
+        assertEquals("Task not exist.", output.toString().trim(),
+                "Неверный вывод метода deleteTaskByID(), если Таск не существует.");
     }
 
     @Test
@@ -276,15 +308,18 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
 
         taskManager.deleteEpicByID(1);
-        assertEquals(0, taskManager.getEpics().size());
-        assertEquals(0, taskManager.getSubTasks().size());
+        assertEquals(0, taskManager.getEpics().size(),
+                "Эпик не удаляется командой deleteEpicByID()");
+        assertEquals(0, taskManager.getSubTasks().size(),
+                "Связанные с Эпиком Сабтаски не удаляются командой deleteEpicByID()");
     }
 
     @Test
     public void deleteEpicByIdTestingNoSuchEpic(){
         setUpStreams();
         taskManager.deleteEpicByID(1);
-        assertEquals("Epic not exist.", output.toString().trim());
+        assertEquals("Epic not exist.", output.toString().trim(),
+                "Неправильный вывод deleteEpicByID(), если Эпик не существует.");
     }
 
     @Test
@@ -294,10 +329,12 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
 
         taskManager.deleteSubTaskByID(2);
-        assertEquals(1, taskManager.getSubTasks().size());
+        assertEquals(1, taskManager.getSubTasks().size(),
+                "Сабтаск не удаляется из хранилища методом deleteSubTaskByID().");
         assertEquals(
                 List.of((SubTask) taskManager.getSubTaskByID(3)),
-                taskManager.getEpicSubTasks(1)
+                taskManager.getEpicSubTasks(1),
+                "При вызове deleteSubTaskByID() Сабтаск не удаляется из Эпика."
         );
     }
 
@@ -305,7 +342,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
     public void deleteSubTaskByIdTestingNoSuchSubTask(){
         setUpStreams();
         taskManager.deleteSubTaskByID(99);
-        assertEquals("Subtask not exist.", output.toString().trim());
+        assertEquals("Subtask not exist.", output.toString().trim(),
+                "Неправильный вывод deleteSubTaskByID() если Сабтаск не существует.");
     }
 
     @Test
@@ -313,8 +351,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(new Task(1, "testTask1", "subs", TaskStatus.NEW));
 
         taskManager.updateTask(new Task(1, "updTask", "sus", TaskStatus.IN_PROGRESS));
-        assertEquals("updTask", taskManager.getTaskByID(1).getName());
-        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getTaskByID(1).getStatus());
+        assertEquals("updTask", taskManager.getTaskByID(1).getName(),
+                "В Таске неверно обновляются поля методом updateTask");
     }
 
     @Test
@@ -323,7 +361,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(new Task(1, "testTask1", "subs", TaskStatus.NEW));
 
         taskManager.updateTask(new Task(7, "updTask", "sus", TaskStatus.IN_PROGRESS));
-        assertEquals("Task with this ID is not exist.", output.toString().trim());
+        assertEquals("Task with this ID is not exist.", output.toString().trim(),
+                "Неверный вывод updateTask(), если Таск не существует.");
     }
 
     @Test
@@ -331,8 +370,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createEpic(new EpicTask(1, "testTask1", "subs"));
 
         taskManager.updateEpic(new EpicTask(1, "updTask", "sus"));
-        assertEquals("updTask", taskManager.getEpicByID(1).getName());
-        assertEquals("sus", taskManager.getEpicByID(1).getDescription());
+        assertEquals("updTask", taskManager.getEpicByID(1).getName(),
+                "В Эпике неверно обновляются поля методом updateEpic()");
     }
 
     @Test
@@ -341,7 +380,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createEpic(new EpicTask(1, "testTask1", "subs"));
 
         taskManager.updateEpic(new EpicTask(7, "updTask", "sus"));
-        assertEquals("Epic with this ID is not exist.", output.toString().trim());
+        assertEquals("Epic with this ID is not exist.", output.toString().trim(),
+                "Неверный вывод updateEpic(), если Эпик не существует.");
     }
 
     @Test
@@ -351,9 +391,10 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
 
         taskManager.updateSubTask(new SubTask(2, "updSub", "sus", TaskStatus.DONE, 1));
-        assertEquals("updSub", taskManager.getSubTaskByID(2).getName());
-        assertEquals(TaskStatus.DONE, taskManager.getEpicByID(1).getStatus());
-        assertEquals(TaskStatus.DONE, taskManager.getSubTaskByID(2).getStatus());
+        assertEquals(TaskStatus.DONE, taskManager.getEpicByID(1).getStatus(),
+                "При обновлении Сабтаски неверно обновляется статус соответствуюшего Эпика.");
+        assertEquals(TaskStatus.DONE, taskManager.getSubTaskByID(2).getStatus(),
+                "В Сабтаске неверно обновляются поля методом updateSubTask()");
     }
 
     @Test
@@ -364,7 +405,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
 
         taskManager.updateSubTask(new SubTask(99, "updSub", "sus", TaskStatus.DONE, 1));
-        assertEquals("Subtask or Epic with this ID is not exist.", output.toString().trim());
+        assertEquals("Subtask or Epic with this ID is not exist.", output.toString().trim(),
+                "Неверный вывод updateSubTask(), если Сабтаск не существует.");
     }
 
     @Test
@@ -375,6 +417,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
 
         taskManager.updateSubTask(new SubTask(2, "updSub", "sus", TaskStatus.DONE, 99));
-        assertEquals("Subtask or Epic with this ID is not exist.", output.toString().trim());
+        assertEquals("Subtask or Epic with this ID is not exist.", output.toString().trim(),
+                "Неверный вывод updateSubTask(), если Эпик не существует.");
     }
 }
