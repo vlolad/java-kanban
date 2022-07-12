@@ -95,9 +95,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                             newTaskManager.getSubTasksMap().put(subTask.getId(), subTask);
                             newTaskManager.getEpicsMap().get(subTask.getEpicID())
                                     .addSubTaskID(subTask.getId()); // Добавляем в эпик ID его сабтаска
-                            if (subTask.getStartTime() != null){
-                                newTaskManager.calculateEpicEndTime(subTask.getEpicID());
-                            }
                             continue;
                         case TASK:
                             newTaskManager.getTasksMap().put(Integer.parseInt(record[0]), fromString(line));
@@ -122,6 +119,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         }
                     }
                 }
+
+                newTaskManager.fullUpdateSortedTasks();
 
                 newTaskManager.setID(newId);
                 for (EpicTask epic : newTaskManager.getEpics()) {

@@ -4,6 +4,7 @@ import net.yandex.taskmanager.model.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 public interface TaskManager {
 
@@ -40,4 +41,6 @@ public interface TaskManager {
          HistoryManager getHistoryManager();
 
          void calculateEpicEndTime(int epicID);
+
+         TreeSet<Task> getPrioritizedTasks();
     }
