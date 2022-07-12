@@ -1,5 +1,8 @@
 package net.yandex.taskmanager;
+import net.yandex.taskmanager.model.*;
 import net.yandex.taskmanager.services.*;
+
+import java.time.LocalDateTime;
 
 public class Main {
 
@@ -8,6 +11,16 @@ public class Main {
 
         TaskManager taskManager = Managers.getDefault();
 
+
+        taskManager.createTask(new Task("test2", "sus",
+                LocalDateTime.of(2022, 7, 10, 22, 0), 10)); // 2
+        taskManager.createTask(new Task("test1", "sus",
+                LocalDateTime.of(2022, 7, 10, 9, 0), 540));
+
+        taskManager.createTask(new Task("test2", "sus",
+                LocalDateTime.of(2022, 7, 10, 11, 0), 15));
+
+        System.out.println(taskManager.getPrioritizedTasks());
         // Создайте 2 задачи, один эпик с 3 подзадачами, а другой эпик без подзадач.
         /*taskManager.createTask(new Task("Task1", "hehe", TaskStatus.NEW)); // id 1
         taskManager.createTask(new Task("Task2", "lol", TaskStatus.NEW)); // id 2
