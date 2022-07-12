@@ -80,7 +80,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest <FileBackedTasks
     @Test
     public void SaveAndLoadTasksWithDataAndTime(){
         getTaskManager().createTask(new Task("Task123", "hehe", TaskStatus.NEW,
-                LocalDateTime.of(2022,7,11,20,0), 30));
+                LocalDateTime.of(2022,7,10,20,0), 30));
         getTaskManager().createEpic(new EpicTask("FirstEpic", "boom"));
         getTaskManager().createSubTask(new SubTask("1subtask1", "hehah", TaskStatus.IN_PROGRESS, 2,
                 LocalDateTime.of(2022,7,11,20,0), 15));
@@ -91,13 +91,31 @@ public class FileBackedTasksManagerTest extends TaskManagerTest <FileBackedTasks
 
         assertNotNull(newTaskManager.getTaskByID(1).getStartTime(),
                 "Не было загружено поле startTime у класса Таск.");
-        LocalDateTime expDateTime = LocalDateTime.of(2022,7,11,20,30);
+        LocalDateTime expDateTime = LocalDateTime.of(2022,7,10,20,30);
         assertEquals(expDateTime, newTaskManager.getTaskByID(1).getEndTime(),
                 "Неправильно загружено и/или просчитано время старта и окончания класса Таск");
 
         LocalDateTime expectedStartTime = LocalDateTime.of(2022,7,11,20,0);
         LocalDateTime expectedEndTime = LocalDateTime.of(2022,7,11,23,0);
-        assertEquals(expectedStartTime, newTaskManager.getEpicByID(2).getStartTime());
-        assertEquals(expectedEndTime, newTaskManager.getEpicByID(2).getEndTime());
+        assertEquals(expectedStartTime, newTaskManager.getEpicByID(2).getStartTime(),
+                "Неправильно расчитывается время начала Эпика");
+        assertEquals(expectedEndTime, newTaskManager.getEpicByID(2).getEndTime(),
+                "Неправильно расчитывается время окончания Эпика");
+    }
+
+    @Test
+    public void SaveAndLoadSortedTasks(){
+        getTaskManager().createTask(new Task("CorrectTask", "hehe", TaskStatus.NEW,
+                LocalDateTime.of(2022,7,10,20,0), 30));
+        getTaskManager().createEpic(new EpicTask("IncorrectTask", "boom"));
+        getTaskManager().createSubTask(new SubTask("IncorrectTask", "hehah", TaskStatus.IN_PROGRESS, 2,
+                LocalDateTime.of(2022,7,11,20,0), 15));
+        getTaskManager().createSubTask(new SubTask("IncorrectTask", "suss", TaskStatus.NEW, 2,
+                LocalDateTime.of(2022,7,11,22,0), 60));
+
+        FileBackedTasksManager newTaskManager =  FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
+
+        assertEquals("CorrectTask", newTaskManager.getPrioritizedTasks().first().getName(),
+                "Неверная сортировка загруженных из файла задач");
     }
 }

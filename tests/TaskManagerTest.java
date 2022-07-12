@@ -483,4 +483,72 @@ abstract class TaskManagerTest <T extends TaskManager> {
                 "Неверно высчитывается endTime у Эпика при обновлении Сабтаск в нём.");
     }
 
+    @Test
+    public void threeSetCheckingTestingForTasks(){
+        taskManager.createTask(new Task("testTaskNull1", "subs", TaskStatus.IN_PROGRESS)); // 1
+        taskManager.createTask(new Task("test2", "sus",
+                LocalDateTime.of(2022, 7, 10, 22, 0), 10)); // 2
+        taskManager.createTask(new Task("test1", "sus",
+                LocalDateTime.of(2022, 7, 10, 9, 0), 540)); // 3
+
+        assertEquals(3, taskManager.getPrioritizedTasks().first().getId(),
+                "Неверная сортировка: первой в списке идет неправильная задача");
+        assertEquals(1, taskManager.getPrioritizedTasks().last().getId(),
+                "Неверная сортировка: последней ожидалась задача с tartTime = null");
+
+        setUpStreams();
+        taskManager.createTask(new Task("test2", "sus",
+                LocalDateTime.of(2022, 7, 10, 11, 0), 15));
+        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim());
+
+        assertEquals(3, taskManager.getPrioritizedTasks().size(),
+                "При отказе в создании новой Таск в checkPeriodForOccupation() задача все равно добавляется" +
+                        "в приоретизированный список");
+    }
+
+    @Test
+    public void threeSetRemoveTaskTesting(){
+        taskManager.createTask(new Task("test2", "sus",
+                LocalDateTime.of(2022, 7, 10, 22, 0), 10));
+        taskManager.createTask(new Task("test1", "sus",
+                LocalDateTime.of(2022, 7, 10, 9, 0), 540));
+
+        taskManager.deleteTaskByID(2);
+        assertEquals(1, taskManager.getPrioritizedTasks().size(),
+                "Неверно работает удаление Таск из sortedTasks.");
+
+        taskManager.clearTasks();
+        assertEquals(0, taskManager.getPrioritizedTasks().size(),
+                "Неверно работает удаление Таск из sortedTasks при удалении всех Тасков.");
+    }
+
+    @Test
+    public void threeSetEpicAndSubTaskTesting(){
+        taskManager.createEpic(new EpicTask("test1", "testing"));
+        taskManager.createSubTask(new SubTask("test2", "sus", 1,
+                LocalDateTime.of(2022, 7, 10, 9, 15), 525));
+        taskManager.createSubTask(new SubTask("test3", "sus", 1,
+                LocalDateTime.of(2022, 7, 10, 23, 0), 60));
+
+        taskManager.updateSubTask(new SubTask(2, "test2", "sus", TaskStatus.DONE, 1,
+                LocalDateTime.of(2022, 9, 9, 15, 40), 20));
+
+        assertEquals(3, taskManager.getPrioritizedTasks().first().getId(),
+                "Неверная сортировка задач после обновления");
+
+        taskManager.deleteSubTaskByID(3);
+
+        assertEquals(2, taskManager.getPrioritizedTasks().first().getId(),
+                "Неверная сортировка задач после удаления одной СабТаски");
+
+        taskManager.clearSubTasks();
+        assertEquals(1, taskManager.getPrioritizedTasks().size(),
+                "Неверно работает удаление сабтасков из sortedTasks при вызове метода clearSubTasks():" +
+                        " Ожидалось - 1, Вывод - " + taskManager.getPrioritizedTasks().size());
+
+        taskManager.clearEpics();
+        assertEquals(0, taskManager.getPrioritizedTasks().size(),
+                "Неверно работает удаление эпиков из sortedTasks при вызове метода clearEpics():" +
+                        " Ожидалось - 0, Вывод - " + taskManager.getPrioritizedTasks().size());
+    }
 }
