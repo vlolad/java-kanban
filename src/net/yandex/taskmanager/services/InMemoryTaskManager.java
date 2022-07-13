@@ -330,8 +330,8 @@ public class InMemoryTaskManager implements TaskManager {
     private boolean checkPeriodForOccupation(Task newTask) {
         if (newTask.getStartTime() != null) {
             for (Task task : sortedTasks) {
-                if (task.getStartTime() == null) {
-                    continue; // Если в цикле попалась задача с null, то переход к следующей
+                /*if (task.getStartTime() == null) {
+                    return false;
                 } else if (task.getId() == newTask.getId()) {
                     continue;
                 } else if (task.getStartTime().isEqual(newTask.getStartTime())) {
@@ -346,6 +346,16 @@ public class InMemoryTaskManager implements TaskManager {
                     return true;
                 } else if (task.getStartTime().isBefore(newTask.getEndTime())
                         && task.getEndTime().isAfter(newTask.getEndTime())) {
+                    return true;
+                }*/
+                if (task.getStartTime() == null) {
+                    return false;
+                } else if (task.getId() == newTask.getId()) {
+                    continue;
+                } else if (!newTask.getEndTime().isAfter(task.getStartTime())
+                        || !newTask.getStartTime().isBefore(task.getEndTime())) {
+                    continue;
+                } else {
                     return true;
                 }
             }
