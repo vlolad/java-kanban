@@ -1,13 +1,13 @@
 package net.yandex.taskmanager.model;
 
 public enum TaskStatus {
-    NEW ("New"),
-    IN_PROGRESS ("In progress"),
-    DONE ("Done");
+    NEW("New"),
+    IN_PROGRESS("In progress"),
+    DONE("Done");
 
     private final String description;
 
-    TaskStatus(String description){
+    TaskStatus(String description) {
         this.description = description;
     }
 

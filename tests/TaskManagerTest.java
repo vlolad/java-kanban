@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-abstract class TaskManagerTest <T extends TaskManager> {
+abstract class TaskManagerTest<T extends TaskManager> {
     private T taskManager;
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
@@ -34,7 +34,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void createTaskTesting(){
+    public void createTaskTesting() {
         taskManager.createTask(new Task("name1", "desc1"));
 
         assertEquals("name1", taskManager.getTaskByID(1).getName(),
@@ -49,7 +49,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void createEpicTesting(){
+    public void createEpicTesting() {
         taskManager.createEpic(new EpicTask("name1", "desc1"));
 
         assertEquals("name1", taskManager.getEpicByID(1).getName(),
@@ -59,7 +59,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void createSubTaskTestingAllOk(){
+    public void createSubTaskTestingAllOk() {
         taskManager.createEpic(new EpicTask("test", "testing"));
         taskManager.createSubTask(new SubTask("sub2", "newSub", 1));
 
@@ -80,8 +80,9 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertEquals(2, ((EpicTask) taskManager.getEpicByID(1)).getSubTasksIDs().size(),
                 "В Эпик неверно добавляются сабтаски: неправильное количество сабтасков в спике subTasksIDs");
     }
+
     @Test
-    public void createSubTaskTestingNoSuchEpic(){
+    public void createSubTaskTestingNoSuchEpic() {
         setUpStreams();
         taskManager.createSubTask(new SubTask(2, "sub2", "newSub", TaskStatus.NEW, 1));
         assertEquals("There is no epic with ID 1", output.toString().trim(),
@@ -89,7 +90,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void getMethodsTesting(){
+    public void getMethodsTesting() {
         assertEquals(0, taskManager.getEpics().size(), "Неверный стандартный размер хранилища");
         assertEquals(0, taskManager.getTasks().size(), "Неверный стандартный размер хранилища");
         assertEquals(0, taskManager.getSubTasks().size(), "Неверный стандартный размер хранилища");
@@ -108,7 +109,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void getHistoryManagerTesting(){
+    public void getHistoryManagerTesting() {
         taskManager.createEpic(new EpicTask(1, "test", "testing"));
         taskManager.createSubTask(new SubTask(2, "sub1", "newSub", TaskStatus.DONE, 1));
         taskManager.createSubTask(new SubTask(3, "sub1", "newSub", TaskStatus.NEW, 1));
@@ -132,7 +133,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void clearTasksTesting(){
+    public void clearTasksTesting() {
         taskManager.createTask(new Task(1, "testTask", "subs", TaskStatus.IN_PROGRESS));
         taskManager.createTask(new Task(2, "testTask", "subs", TaskStatus.DONE));
 
@@ -146,7 +147,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void clearEpicTasksTesting(){
+    public void clearEpicTasksTesting() {
         taskManager.createEpic(new EpicTask(1, "test1", "testing"));
         taskManager.createEpic(new EpicTask(2, "test2", "testing"));
         taskManager.createSubTask(new SubTask(3, "sub1", "newSub", TaskStatus.DONE, 1));
@@ -167,7 +168,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void clearSubTasksTesting(){
+    public void clearSubTasksTesting() {
         taskManager.createEpic(new EpicTask(1, "test1", "testing"));
         taskManager.createEpic(new EpicTask(2, "test2", "testing"));
         taskManager.createSubTask(new SubTask(3, "sub1", "newSub", TaskStatus.IN_PROGRESS, 1));
@@ -190,7 +191,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void getTaskByIdTestingAllOk(){
+    public void getTaskByIdTestingAllOk() {
         taskManager.createTask(new Task(1, "testTask1", "subs", TaskStatus.IN_PROGRESS));
         taskManager.createTask(new Task(2, "testTask2", "subs", TaskStatus.DONE));
 
@@ -204,7 +205,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void getTasksByIdTestingNoSuchId(){
+    public void getTasksByIdTestingNoSuchId() {
         setUpStreams();
         assertNull(taskManager.getTaskByID(99));
         assertEquals("Task not found.", output.toString().trim(),
@@ -212,7 +213,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void getEpicByIdTestingAllOk(){
+    public void getEpicByIdTestingAllOk() {
         taskManager.createEpic(new EpicTask(1, "test1", "testing"));
         taskManager.createEpic(new EpicTask(2, "test2", "testing"));
         taskManager.createSubTask(new SubTask(3, "sub1", "newSub", TaskStatus.DONE, 2));
@@ -227,7 +228,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void getEpicByIdTestingNoSuchId(){
+    public void getEpicByIdTestingNoSuchId() {
         setUpStreams();
         assertNull(taskManager.getEpicByID(99));
         assertEquals("Epic not found.", output.toString().trim(),
@@ -235,7 +236,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void getSubTaskByIdTestingAllOk(){
+    public void getSubTaskByIdTestingAllOk() {
         taskManager.createEpic(new EpicTask(1, "test1", "testing"));
         taskManager.createSubTask(new SubTask(2, "sub1", "newSub", TaskStatus.IN_PROGRESS, 1));
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
@@ -250,7 +251,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void getSubTaskByIdTestingNoSuchId(){
+    public void getSubTaskByIdTestingNoSuchId() {
         setUpStreams();
         assertNull(taskManager.getSubTaskByID(99));
         assertEquals("Subtask not found.", output.toString().trim(),
@@ -258,7 +259,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void getEpicSubTaskIdsAllOk(){
+    public void getEpicSubTaskIdsAllOk() {
         taskManager.createEpic(new EpicTask(1, "test1", "testing"));
         taskManager.createSubTask(new SubTask(2, "sub1", "newSub", TaskStatus.IN_PROGRESS, 1));
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
@@ -270,7 +271,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void getEpicSubTaskIdsNoSuchId(){
+    public void getEpicSubTaskIdsNoSuchId() {
         setUpStreams();
         taskManager.getEpicSubTasks(1);
         assertEquals("Cannot find EpicTask by this ID.", output.toString().trim(),
@@ -278,7 +279,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void deleteTaskByIdTestingAllOk(){
+    public void deleteTaskByIdTestingAllOk() {
         taskManager.createTask(new Task(1, "testTask1", "subs", TaskStatus.NEW));
         taskManager.deleteTaskByID(1);
 
@@ -287,7 +288,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void deleteTaskByIdTestingNoSuchTask(){
+    public void deleteTaskByIdTestingNoSuchTask() {
         setUpStreams();
         taskManager.deleteTaskByID(1);
         assertEquals("Task not exist.", output.toString().trim(),
@@ -295,7 +296,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void deleteEpicByIdTestingAllOk(){
+    public void deleteEpicByIdTestingAllOk() {
         taskManager.createEpic(new EpicTask(1, "test1", "testing"));
         taskManager.createSubTask(new SubTask(2, "sub1", "newSub", TaskStatus.IN_PROGRESS, 1));
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
@@ -308,7 +309,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void deleteEpicByIdTestingNoSuchEpic(){
+    public void deleteEpicByIdTestingNoSuchEpic() {
         setUpStreams();
         taskManager.deleteEpicByID(1);
         assertEquals("Epic not exist.", output.toString().trim(),
@@ -316,7 +317,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void deleteSubTaskByIdTestingAllOk(){
+    public void deleteSubTaskByIdTestingAllOk() {
         taskManager.createEpic(new EpicTask(1, "test1", "testing"));
         taskManager.createSubTask(new SubTask(2, "sub1", "newSub", TaskStatus.IN_PROGRESS, 1));
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
@@ -332,7 +333,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void deleteSubTaskByIdTestingNoSuchSubTask(){
+    public void deleteSubTaskByIdTestingNoSuchSubTask() {
         setUpStreams();
         taskManager.deleteSubTaskByID(99);
         assertEquals("Subtask not exist.", output.toString().trim(),
@@ -340,7 +341,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void updateTaskTestingAllOk(){
+    public void updateTaskTestingAllOk() {
         taskManager.createTask(new Task(1, "testTask1", "subs", TaskStatus.NEW));
 
         taskManager.updateTask(new Task(1, "updTask", "sus", TaskStatus.IN_PROGRESS));
@@ -349,7 +350,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void updateTaskTestingNoSuchTask(){
+    public void updateTaskTestingNoSuchTask() {
         setUpStreams();
         taskManager.createTask(new Task(1, "testTask1", "subs", TaskStatus.NEW));
 
@@ -359,7 +360,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void updateEpicTestingAllOk(){
+    public void updateEpicTestingAllOk() {
         taskManager.createEpic(new EpicTask(1, "testTask1", "subs"));
 
         taskManager.updateEpic(new EpicTask(1, "updTask", "sus"));
@@ -368,7 +369,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void updateEpicTestingNoSuchEpic(){
+    public void updateEpicTestingNoSuchEpic() {
         setUpStreams();
         taskManager.createEpic(new EpicTask(1, "testTask1", "subs"));
 
@@ -378,7 +379,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void updateSubTaskTestingAllOk(){
+    public void updateSubTaskTestingAllOk() {
         taskManager.createEpic(new EpicTask(1, "test1", "testing"));
         taskManager.createSubTask(new SubTask(2, "sub1", "newSub", TaskStatus.IN_PROGRESS, 1));
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
@@ -391,7 +392,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void updateSubTaskTestingNoSuchSubTask(){
+    public void updateSubTaskTestingNoSuchSubTask() {
         setUpStreams();
         taskManager.createEpic(new EpicTask(1, "test1", "testing"));
         taskManager.createSubTask(new SubTask(2, "sub1", "newSub", TaskStatus.IN_PROGRESS, 1));
@@ -403,7 +404,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void updateSubTaskTestingNoSuchEpicId(){
+    public void updateSubTaskTestingNoSuchEpicId() {
         setUpStreams();
         taskManager.createEpic(new EpicTask(1, "test1", "testing"));
         taskManager.createSubTask(new SubTask(2, "sub1", "newSub", TaskStatus.IN_PROGRESS, 1));
@@ -415,7 +416,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void createNewTaskWithDataAndTime(){
+    public void createNewTaskWithDataAndTime() {
         taskManager.createTask(new Task("test1", "sus",
                 LocalDateTime.of(2022, 7, 10, 9, 0), 540));
 
@@ -425,7 +426,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void createNewSubTaskWithDataAndTime(){
+    public void createNewSubTaskWithDataAndTime() {
         taskManager.createEpic(new EpicTask("test1", "testing"));
         taskManager.createSubTask(new SubTask("test2", "sus", 1,
                 LocalDateTime.of(2022, 7, 10, 9, 15), 525));
@@ -436,7 +437,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void createNewEpicWithDataAndTime(){
+    public void createNewEpicWithDataAndTime() {
         taskManager.createEpic(new EpicTask("test1", "testing"));
         taskManager.createSubTask(new SubTask("test2", "sus", 1,
                 LocalDateTime.of(2022, 7, 10, 9, 15), 525));
@@ -450,7 +451,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
                 taskManager.getEpicByID(1).getEndTime(),
                 "Неверно определяется endTime в Эпике при создании новой СабТаск");
         long expectedDuration = Duration.between(
-                taskManager.getSubTaskByID(2).getStartTime(), taskManager.getSubTaskByID(3).getEndTime())
+                        taskManager.getSubTaskByID(2).getStartTime(), taskManager.getSubTaskByID(3).getEndTime())
                 .toMinutes();
         assertEquals(expectedDuration, taskManager.getEpicByID(1).getDuration(),
                 "Неверно определяется duration в Эпике при создании новой СабТаск");
@@ -461,7 +462,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void updateSubTaskAndUpdateDateInEpic(){
+    public void updateSubTaskAndUpdateDateInEpic() {
         taskManager.createEpic(new EpicTask("test1", "testing"));
         taskManager.createSubTask(new SubTask("test2", "sus", 1,
                 LocalDateTime.of(2022, 7, 10, 9, 15), 525));
@@ -475,7 +476,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void threeSetCheckingTestingForTasks(){
+    public void threeSetCheckingTestingForTasks() {
         taskManager.createTask(new Task("testTaskNull1", "subs", TaskStatus.IN_PROGRESS)); // 1
         taskManager.createTask(new Task("test2", "sus",
                 LocalDateTime.of(2022, 7, 10, 22, 0), 10)); // 2
@@ -487,7 +488,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertEquals(1, taskManager.getPrioritizedTasks().last().getId(),
                 "Неверная сортировка: последней ожидалась задача с startTime = null");
 
-        taskManager.updateTask(new Task(2,"test2_v.2", "sus", TaskStatus.IN_PROGRESS,
+        taskManager.updateTask(new Task(2, "test2_v.2", "sus", TaskStatus.IN_PROGRESS,
                 LocalDateTime.of(2022, 5, 10, 22, 0), 10));
 
         assertEquals(2, taskManager.getPrioritizedTasks().first().getId(),
@@ -504,7 +505,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void threeSetRemoveTaskTesting(){
+    public void threeSetRemoveTaskTesting() {
         taskManager.createTask(new Task("test2", "sus",
                 LocalDateTime.of(2022, 7, 10, 22, 0), 10));
         taskManager.createTask(new Task("test1", "sus",
@@ -520,7 +521,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void threeSetSubTaskTesting(){
+    public void threeSetSubTaskTesting() {
         taskManager.createEpic(new EpicTask("test1", "testing"));
         taskManager.createSubTask(new SubTask("test2", "sus", 1,
                 LocalDateTime.of(2022, 7, 10, 9, 15), 525));
@@ -546,7 +547,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void treeSetNullTasksSortTesting(){
+    public void treeSetNullTasksSortTesting() {
         taskManager.createTask(new Task("TaskNull1", "subs", TaskStatus.IN_PROGRESS)); // 1
         taskManager.createTask(new Task("TaskNull2", "sus")); // 2
         taskManager.createTask(new Task("TaskNotNull", "sus",
@@ -558,50 +559,50 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void checkValidationOfDateTimeOccupied(){
+    public void checkValidationOfDateTimeOccupied() {
         taskManager.createTask(new Task("mainTask", "write tests for TaskManager",
-                LocalDateTime.of(2022,7,12,9,0), 1800));
+                LocalDateTime.of(2022, 7, 12, 9, 0), 1800));
 
         setUpStreams();
         taskManager.createTask(new Task("test1", "isEqual.startTime(mainTask)",
-                LocalDateTime.of(2022,7,12,9,0), 5));
+                LocalDateTime.of(2022, 7, 12, 9, 0), 5));
         assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
                 "Ошибка верификации: время старта двух задач совпадает");
         output.reset();
 
         taskManager.createTask(new Task("test2", "isEqual.endTime(mainTask)",
-                LocalDateTime.of(2022,7,13,14,0), 60));
+                LocalDateTime.of(2022, 7, 13, 14, 0), 60));
         assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
                 "Ошибка верификации: время окончания двух задач совпадает");
         output.reset();
 
         taskManager.createTask(new Task("test3", "задача внутри времени mainTask",
-                LocalDateTime.of(2022,7,12,21,20), 60));
+                LocalDateTime.of(2022, 7, 12, 21, 20), 60));
         assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
                 "Ошибка верификации: новая задача полностью выполняется во время существующей");
         output.reset();
 
         taskManager.createTask(new Task("test4", "задача \"поглощает\" mainTask",
-                LocalDateTime.of(2022,7,12,8,59), 2600));
+                LocalDateTime.of(2022, 7, 12, 8, 59), 2600));
         assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
                 "Ошибка верификации: новая задача полностью поглощает время существующей");
         output.reset();
 
         taskManager.createTask(new Task("test5", "задача частично пересекается с mainTask",
-                LocalDateTime.of(2022,7,13,14,30), 60));
+                LocalDateTime.of(2022, 7, 13, 14, 30), 60));
         assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
                 "Ошибка верификации: новая задача начинается до окончания предыдущей, но оканчивается позднее");
         output.reset();
 
         taskManager.createTask(new Task("test6", "задача частично пересекается с mainTask (2)",
-                LocalDateTime.of(2022,7,12,8,30), 240));
+                LocalDateTime.of(2022, 7, 12, 8, 30), 240));
         assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
                 "Ошибка верификации: новая задача начинается ранее, а оканчивается во время " +
                         "выполнения основной задачи");
     }
 
     @Test
-    public void nullEndTimeTaskTesting(){
+    public void nullEndTimeTaskTesting() {
         taskManager.createTask(new Task("TaskNull", "just task"));
 
         setUpStreams();

@@ -3,25 +3,26 @@ import net.yandex.taskmanager.services.FileBackedTasksManager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.time.LocalDateTime;
 
-public class FileBackedTasksManagerTest extends TaskManagerTest <FileBackedTasksManager>  {
+public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
     private final String TEST_SAVING = "testSave.csv";
 
     @BeforeEach
-    public void createTaskManager(){
+    public void createTaskManager() {
         setTaskManager(new FileBackedTasksManager(new File(TEST_SAVING)));
     }
 
     @Test
-    public void saveAndLoadEmptyManager(){
+    public void saveAndLoadEmptyManager() {
         getTaskManager().save();
 
-        FileBackedTasksManager newTaskManager =  FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
+        FileBackedTasksManager newTaskManager = FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
 
         assertEquals(0, newTaskManager.getTasks().size(), "Список тасков не пустой");
         assertEquals(0, newTaskManager.getEpics().size(), "Список эпиков не пустой");
@@ -29,10 +30,10 @@ public class FileBackedTasksManagerTest extends TaskManagerTest <FileBackedTasks
     }
 
     @Test
-    public void saveAndLoadClearEpic(){
+    public void saveAndLoadClearEpic() {
         getTaskManager().createEpic(new EpicTask("test1", "sus"));
 
-        FileBackedTasksManager newTaskManager =  FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
+        FileBackedTasksManager newTaskManager = FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
         assertEquals(1, newTaskManager.getEpics().size(), "Эпик не загружен.");
         assertEquals("test1", newTaskManager.getEpicByID(1).getName(), "Эпик не загружен.");
         assertEquals(0, newTaskManager.getEpicSubTasks(1).size(),
@@ -40,18 +41,18 @@ public class FileBackedTasksManagerTest extends TaskManagerTest <FileBackedTasks
     }
 
     @Test
-    public void saveAndLoadClearHistory(){
+    public void saveAndLoadClearHistory() {
         getTaskManager().createTask(new Task("test1", "sus"));
         getTaskManager().getTaskByID(1);
         getTaskManager().deleteTaskByID(1);
 
-        FileBackedTasksManager newTaskManager =  FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
+        FileBackedTasksManager newTaskManager = FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
         assertEquals(0, newTaskManager.getHistory().size(),
                 "Загружена не пустая история");
     }
 
     @Test
-    public void SaveAndLoadManagerNormalBehavior(){
+    public void SaveAndLoadManagerNormalBehavior() {
         getTaskManager().createTask(new Task("test1", "sus"));
         getTaskManager().createEpic(new EpicTask("test2", "sus"));
         getTaskManager().createSubTask(new SubTask("test1", "sus", 2));
@@ -59,7 +60,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest <FileBackedTasks
         getTaskManager().getEpicByID(2);
         getTaskManager().getSubTaskByID(3);
 
-        FileBackedTasksManager newTaskManager =  FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
+        FileBackedTasksManager newTaskManager = FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
 
         assertEquals(1, newTaskManager.getTaskByID(1).getId(),
                 "Неверная загрузка Таски из файла.");
@@ -78,14 +79,14 @@ public class FileBackedTasksManagerTest extends TaskManagerTest <FileBackedTasks
     }
 
     @Test
-    public void compareManagersTesting(){
+    public void compareManagersTesting() {
         getTaskManager().createTask(new Task("Task1", "new", TaskStatus.NEW,
-                LocalDateTime.of(2022,7,10,20,0), 30));
+                LocalDateTime.of(2022, 7, 10, 20, 0), 30));
         getTaskManager().createEpic(new EpicTask("Epic1", "neew"));
         getTaskManager().createSubTask(new SubTask("SubTask1", "neeew", TaskStatus.IN_PROGRESS, 2,
-                LocalDateTime.of(2022,7,11,20,0), 15));
+                LocalDateTime.of(2022, 7, 11, 20, 0), 15));
         getTaskManager().createSubTask(new SubTask("SubTask2", "sus", TaskStatus.NEW, 2,
-                LocalDateTime.of(2022,7,11,22,0), 60));
+                LocalDateTime.of(2022, 7, 11, 22, 0), 60));
         getTaskManager().createTask(new Task("Task2", "now"));
 
         getTaskManager().getTaskByID(1);
@@ -94,7 +95,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest <FileBackedTasks
         getTaskManager().getEpicByID(2);
         getTaskManager().getSubTaskByID(4);
 
-        FileBackedTasksManager newTaskManager =  FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
+        FileBackedTasksManager newTaskManager = FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
 
         assertEquals(getTaskManager().getTasks(), newTaskManager.getTasks(),
                 "Список Тасков после загрузки из файла не совпадает");
@@ -109,25 +110,25 @@ public class FileBackedTasksManagerTest extends TaskManagerTest <FileBackedTasks
     }
 
     @Test
-    public void SaveAndLoadTasksWithDataAndTime(){
+    public void SaveAndLoadTasksWithDataAndTime() {
         getTaskManager().createTask(new Task("Task123", "hehe", TaskStatus.NEW,
-                LocalDateTime.of(2022,7,10,20,0), 30));
+                LocalDateTime.of(2022, 7, 10, 20, 0), 30));
         getTaskManager().createEpic(new EpicTask("FirstEpic", "boom"));
         getTaskManager().createSubTask(new SubTask("1subtask1", "hehah", TaskStatus.IN_PROGRESS, 2,
-                LocalDateTime.of(2022,7,11,20,0), 15));
+                LocalDateTime.of(2022, 7, 11, 20, 0), 15));
         getTaskManager().createSubTask(new SubTask("test3", "suss", TaskStatus.NEW, 2,
-                LocalDateTime.of(2022,7,11,22,0), 60));
+                LocalDateTime.of(2022, 7, 11, 22, 0), 60));
 
-        FileBackedTasksManager newTaskManager =  FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
+        FileBackedTasksManager newTaskManager = FileBackedTasksManager.loadFromFile(new File(TEST_SAVING));
 
         assertNotNull(newTaskManager.getTaskByID(1).getStartTime(),
                 "Не было загружено поле startTime у класса Таск.");
-        LocalDateTime expDateTime = LocalDateTime.of(2022,7,10,20,30);
+        LocalDateTime expDateTime = LocalDateTime.of(2022, 7, 10, 20, 30);
         assertEquals(expDateTime, newTaskManager.getTaskByID(1).getEndTime(),
                 "Неправильно загружено и/или просчитано время старта и окончания класса Таск");
 
-        LocalDateTime expectedStartTime = LocalDateTime.of(2022,7,11,20,0);
-        LocalDateTime expectedEndTime = LocalDateTime.of(2022,7,11,23,0);
+        LocalDateTime expectedStartTime = LocalDateTime.of(2022, 7, 11, 20, 0);
+        LocalDateTime expectedEndTime = LocalDateTime.of(2022, 7, 11, 23, 0);
         assertEquals(expectedStartTime, newTaskManager.getEpicByID(2).getStartTime(),
                 "Неправильно расчитывается время начала Эпика");
         assertEquals(expectedEndTime, newTaskManager.getEpicByID(2).getEndTime(),

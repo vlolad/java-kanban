@@ -9,21 +9,23 @@ public class EpicTask extends Task {
 
     private List<Integer> subTasksIDs = new ArrayList<>();
     private LocalDateTime endTime;
+
     // Конструктор для создания эпика
-    public EpicTask(String name, String description){
+    public EpicTask(String name, String description) {
         super(name, description);
     }
+
     // Конструктор для изменения эпика
-    public EpicTask(int id, String name, String description){
+    public EpicTask(int id, String name, String description) {
         setId(id);
         setName(name);
         setDescription(description);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         String showBody;
-        if (getDescription() == null){
+        if (getDescription() == null) {
             showBody = "null";
         } else {
             showBody = Integer.toString(getDescription().length());
@@ -32,11 +34,11 @@ public class EpicTask extends Task {
                 + showBody + "» | status=«" + getStatus() + "» | subtasks id's=" + subTasksIDs + "}";
     }
 
-    public void addSubTaskID(int id){
+    public void addSubTaskID(int id) {
         subTasksIDs.add(id);
     }
 
-    public void removeSubTaskID(Integer id){ // Теперь удаляет соответствующий объект Integer из списка
+    public void removeSubTaskID(Integer id) { // Теперь удаляет соответствующий объект Integer из списка
         subTasksIDs.remove(id);
     }
 
@@ -44,7 +46,7 @@ public class EpicTask extends Task {
         return subTasksIDs;
     }
 
-    public void clearSubTasksIDs(){
+    public void clearSubTasksIDs() {
         subTasksIDs.clear();
     }
 
@@ -61,7 +63,7 @@ public class EpicTask extends Task {
         this.endTime = endTime;
     }
 
-    public void clearDateTime(){
+    public void clearDateTime() {
         this.endTime = null;
         setStartTime(null);
         setDuration(0);

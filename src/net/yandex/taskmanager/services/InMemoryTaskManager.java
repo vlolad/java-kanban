@@ -17,7 +17,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected final TreeSet<Task> sortedTasks = new TreeSet<>((o1, o2) -> {
         if (o1.getStartTime() == null) {
-            if (o2.getStartTime() == null){
+            if (o2.getStartTime() == null) {
                 return o1.getId() - o2.getId();
             } else {
                 return 1;
@@ -26,7 +26,7 @@ public class InMemoryTaskManager implements TaskManager {
             return -1;
         } else if (o1.getStartTime().isBefore(o2.getStartTime())) {
             return -1;
-        } else if (o1.getStartTime().isAfter(o2.getStartTime())){
+        } else if (o1.getStartTime().isAfter(o2.getStartTime())) {
             return 1;
         }
         return 0;
@@ -339,7 +339,7 @@ public class InMemoryTaskManager implements TaskManager {
                 } else if (task.getEndTime().isEqual(newTask.getEndTime())) {
                     return true;
                 } else if (task.getStartTime().isAfter(newTask.getStartTime())
-                        && task.getEndTime().isBefore(newTask.getEndTime())){
+                        && task.getEndTime().isBefore(newTask.getEndTime())) {
                     return true;
                 } else if (task.getStartTime().isBefore(newTask.getStartTime())
                         && task.getEndTime().isAfter(newTask.getStartTime())) {

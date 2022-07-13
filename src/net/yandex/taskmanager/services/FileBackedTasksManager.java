@@ -18,7 +18,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         SAVING = file;
     }
 
-    public File getSAVE(){
+    public File getSAVE() {
         return SAVING;
     }
 
@@ -248,7 +248,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             line[1] = String.valueOf(TaskTypes.TASK);
         }
 
-        if (task.getStartTime() != null){
+        if (task.getStartTime() != null) {
             line[6] = task.getStartTime().toString();
             line[7] = String.valueOf(task.getDuration());
         }
@@ -263,7 +263,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             case EPIC:
                 return new EpicTask(Integer.parseInt(line[0]), line[2], line[4]);
             case SUBTASK:
-                if (!"null".equals(line[6])){
+                if (!"null".equals(line[6])) {
                     return new SubTask(Integer.parseInt(line[0]), line[2], line[4],
                             TaskStatus.valueOf(line[3]), Integer.parseInt(line[5]),
                             LocalDateTime.parse(line[6]), Long.parseLong(line[7]));
@@ -272,7 +272,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                             TaskStatus.valueOf(line[3]), Integer.parseInt(line[5]));
                 }
             case TASK:
-                if (!"null".equals(line[6])){
+                if (!"null".equals(line[6])) {
                     return new Task(Integer.parseInt(line[0]), line[2], line[4], TaskStatus.valueOf(line[3]),
                             LocalDateTime.parse(line[6]), Long.parseLong(line[7]));
                 } else {
