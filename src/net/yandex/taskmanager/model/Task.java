@@ -1,6 +1,7 @@
 package net.yandex.taskmanager.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Task {
     private int id;
@@ -118,6 +119,24 @@ public class Task {
     }
 
     public LocalDateTime getEndTime(){
-        return startTime.plusMinutes(duration);
+        if (startTime != null) {return startTime.plusMinutes(duration);}
+        else {
+            System.out.println("Время старта для этой задачи не задано");
+            return LocalDateTime.MAX;
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (this.getClass() != obj.getClass()) return false;
+        Task otherTask = (Task) obj;
+        return (id == otherTask.getId()) &&
+                Objects.equals(name, otherTask.getName()) &&
+                Objects.equals(description, otherTask.getDescription()) &&
+                Objects.equals(status, otherTask.getStatus()) &&
+                (duration == otherTask.getDuration()) &&
+                Objects.equals(startTime, otherTask.getStartTime());
     }
 }

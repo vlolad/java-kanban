@@ -3,6 +3,7 @@ package net.yandex.taskmanager.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class EpicTask extends Task {
 
@@ -64,5 +65,18 @@ public class EpicTask extends Task {
         this.endTime = null;
         setStartTime(null);
         setDuration(0);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (this.getClass() != obj.getClass()) return false;
+        EpicTask otherTask = (EpicTask) obj;
+        return (getId() == otherTask.getId()) &&
+                Objects.equals(getName(), otherTask.getName()) &&
+                Objects.equals(getDescription(), otherTask.getDescription()) &&
+                Objects.equals(getStatus(), otherTask.getStatus()) &&
+                Objects.equals(subTasksIDs, otherTask.getSubTasksIDs());
     }
 }

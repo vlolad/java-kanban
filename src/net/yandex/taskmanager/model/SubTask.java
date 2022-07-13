@@ -1,6 +1,7 @@
 package net.yandex.taskmanager.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class SubTask extends Task {
 
@@ -55,5 +56,20 @@ public class SubTask extends Task {
         }
         return "SubTask{name= «" + getName() + "» | id=«" + getId() + "» | description(length)=«"
                 + showBody + "» | status=«" + getStatus() + "» | epicID=«" + epicID + "»}";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (this.getClass() != obj.getClass()) return false;
+        SubTask otherTask = (SubTask) obj;
+        return (getId() == otherTask.getId()) &&
+                Objects.equals(getName(), otherTask.getName()) &&
+                Objects.equals(getDescription(), otherTask.getDescription()) &&
+                Objects.equals(getStatus(), otherTask.getStatus()) &&
+                (getDuration() == otherTask.getDuration()) &&
+                Objects.equals(getStartTime(), otherTask.getStartTime()) &&
+                Objects.equals(epicID, otherTask.getEpicID());
     }
 }
