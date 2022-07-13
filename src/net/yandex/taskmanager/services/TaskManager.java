@@ -12,11 +12,6 @@ public interface TaskManager {
          List<EpicTask> getEpics();
          List<SubTask> getSubTasks();
 
-         //Используются в FileBackedTasksManager
-         Map<Integer, Task> getTasksMap();
-         Map<Integer, EpicTask> getEpicsMap();
-         Map<Integer, SubTask> getSubTasksMap();
-
          void clearTasks();
          void clearEpics();
          void clearSubTasks();
@@ -38,9 +33,7 @@ public interface TaskManager {
          void updateSubTask(SubTask newSubTask);
 
          List<SubTask> getEpicSubTasks(int epicID);
-         HistoryManager getHistoryManager();
-
-         void calculateEpicEndTime(int epicID);
+         List<Task> getHistory();
 
          TreeSet<Task> getPrioritizedTasks();
     }
