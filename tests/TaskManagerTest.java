@@ -4,7 +4,6 @@ import net.yandex.taskmanager.services.*;
 import org.junit.jupiter.api.*;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -599,6 +598,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
                 "Ошибка верификации: новая задача начинается ранее, а оканчивается во время " +
                         "выполнения основной задачи");
+        output.reset();
     }
 
     @Test
@@ -606,7 +606,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createTask(new Task("TaskNull", "just task"));
 
         setUpStreams();
-        taskManager.getTaskByID(1).getEndTime();
+        assertNull(taskManager.getTaskByID(1).getEndTime());
         assertEquals("Время старта для этой задачи не задано", output.toString().trim(),
                 "Неправильное поведение при вызове getEndTime() у Таск с startTime == null");
     }
