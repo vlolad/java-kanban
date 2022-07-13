@@ -4,21 +4,13 @@ import net.yandex.taskmanager.services.*;
 
 import org.junit.jupiter.api.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class HistoryManagerTest extends InMemoryHistoryManager implements HistoryManager {
     private HistoryManager historyManager;
-    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
-
-    public void setUpStreams() {
-        System.setOut(new PrintStream(output));
-    }
 
     @BeforeEach
     public void createManager(){
