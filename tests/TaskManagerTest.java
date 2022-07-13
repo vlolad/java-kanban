@@ -4,6 +4,7 @@ import net.yandex.taskmanager.services.*;
 import org.junit.jupiter.api.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -76,7 +77,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
                 "В Сабтаск неверно добавляется статус конструктором");
         assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpicByID(1).getStatus(),
                 "В Эпике неверно обновляется статус при сабтасках NEW и DONE");
-        assertEquals(2, taskManager.getEpicsMap().get(1).getSubTasksIDs().size(),
+        assertEquals(2, ((EpicTask) taskManager.getEpicByID(1)).getSubTasksIDs().size(),
                 "В Эпик неверно добавляются сабтаски: неправильное количество сабтасков в спике subTasksIDs");
     }
     @Test
@@ -92,9 +93,6 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertEquals(0, taskManager.getEpics().size(), "Неверный стандартный размер хранилища");
         assertEquals(0, taskManager.getTasks().size(), "Неверный стандартный размер хранилища");
         assertEquals(0, taskManager.getSubTasks().size(), "Неверный стандартный размер хранилища");
-        assertEquals(0, taskManager.getEpicsMap().size(), "Неверный стандартный размер мапы");
-        assertEquals(0, taskManager.getTasksMap().size(), "Неверный стандартный размер мапы");
-        assertEquals(0, taskManager.getSubTasksMap().size(), "Неверный стандартный размер мапы");
 
         taskManager.createEpic(new EpicTask(1, "test", "testing"));
         taskManager.createSubTask(new SubTask(2, "sub1", "newSub", TaskStatus.DONE, 1));
@@ -107,12 +105,6 @@ abstract class TaskManagerTest <T extends TaskManager> {
                 "Неверный размер хранилища Тасков: Ожидалось - 1, Вывод - " + taskManager.getTasks().size());
         assertEquals(2, taskManager.getSubTasks().size(),
                 "Неверный размер хранилища Сабтасков: Ожидалось - 2, Вывод - " + taskManager.getSubTasks().size());
-        assertEquals(1, taskManager.getEpicsMap().size(),
-                "Неверный размер мапы Эпиков: Ожидалось - 1, Вывод - " + taskManager.getEpicsMap().size());
-        assertEquals(1, taskManager.getTasksMap().size(),
-                "Неверный размер мапы Тасков: Ожидалось - 1, Вывод - " + taskManager.getTasksMap().size());
-        assertEquals(2, taskManager.getSubTasksMap().size(),
-                "Неверный размер мапы Тасков: Ожидалось - 2, Вывод - " + taskManager.getSubTasksMap().size());
     }
 
     @Test
@@ -123,20 +115,20 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(new Task(4, "testTask", "subs", TaskStatus.IN_PROGRESS));
 
         taskManager.getTaskByID(4);
-        assertEquals(1, taskManager.getHistoryManager().getHistory().size(),
+        assertEquals(1, taskManager.getHistory().size(),
                 "Неверный размер истории при одном вызове Таск: Ожидалось 1, Вывод - "
-                        + taskManager.getHistoryManager().getHistory().size());
+                        + taskManager.getHistory().size());
 
         taskManager.getEpicByID(1);
-        assertEquals(2, taskManager.getHistoryManager().getHistory().size(),
+        assertEquals(2, taskManager.getHistory().size(),
                 "Неверный размер истории при вызове Так и Эпик: Ожидалось 2, Вывод - "
-                        + taskManager.getHistoryManager().getHistory().size());
+                        + taskManager.getHistory().size());
 
         taskManager.getSubTaskByID(2);
         taskManager.getSubTaskByID(3);
-        assertEquals(4, taskManager.getHistoryManager().getHistory().size(),
+        assertEquals(4, taskManager.getHistory().size(),
                 "Неверный размер истории при вызове Таск, Эпик и двух Сабтасков: Ожидалось 4, Вывод - "
-                        + taskManager.getHistoryManager().getHistory().size());
+                        + taskManager.getHistory().size());
     }
 
     @Test
@@ -148,9 +140,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.getTaskByID(2);
 
         taskManager.clearTasks();
-        assertEquals(0, taskManager.getTasksMap().size(),
-                "Мапа Тасков не отчищается при вызове метода clearTasks()");
-        assertEquals(0, taskManager.getHistoryManager().getHistory().size(),
+
+        assertEquals(0, taskManager.getHistory().size(),
                 "Из истории не удаляются просмотренные Таски при вызове метода clearTasks()");
     }
 
@@ -167,11 +158,11 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.getSubTaskByID(4);
 
         taskManager.clearEpics();
-        assertEquals(0, taskManager.getEpicsMap().size(),
-                "Мапа Эпиков не отчищается при вызове метода clearEpics()");
-        assertEquals(0, taskManager.getSubTasksMap().size(),
-                "Мапа Сабтасков не отчищается при вызове метода clearEpics()");
-        assertEquals(0, taskManager.getHistoryManager().getHistory().size(),
+        assertEquals(0, taskManager.getEpics().size(),
+                "Хранилище не отчищается при вызове метода clearEpics()");
+        assertEquals(0, taskManager.getSubTasks().size(),
+                "Хранилище Сабтасков не отчищается при вызове метода clearEpics()");
+        assertEquals(0, taskManager.getHistory().size(),
                 "Из истории не удаляются просмотренные Эпики и Сабтаски при вызове метода clearEpics()");
     }
 
@@ -189,11 +180,11 @@ abstract class TaskManagerTest <T extends TaskManager> {
 
         taskManager.clearSubTasks();
 
-        assertEquals(0, taskManager.getSubTasksMap().size(),
-                "Мапа Сабтасков не отчищается при вызове метода clearSubTasks()");
-        assertEquals(2, taskManager.getHistoryManager().getHistory().size(),
+        assertEquals(0, taskManager.getSubTasks().size(),
+                "Хранилище Сабтасков не отчищается при вызове метода clearSubTasks()");
+        assertEquals(2, taskManager.getHistory().size(),
                 "Неверный вывод истории после вывода метода clearSubTasks(): Ожидалось - 2, Вывод - " +
-                        taskManager.getHistoryManager().getHistory().size()); // require 2
+                        taskManager.getHistory().size()); // require 2
         assertEquals(TaskStatus.NEW, taskManager.getEpicByID(1).getStatus(),
                 "Неверный расчет статуса Эпика после вызова метода clearSubTasks()");
     }
@@ -209,7 +200,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertEquals(TaskStatus.DONE, taskManager.getTaskByID(2).getStatus());
 
         List<Task> tasksFromManager = taskManager.getTasks();
-        assertEquals(tasksFromManager, taskManager.getHistoryManager().getHistory());
+        assertEquals(tasksFromManager, taskManager.getHistory());
     }
 
     @Test
@@ -232,7 +223,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertEquals(TaskStatus.DONE, taskManager.getEpicByID(2).getStatus());
 
         List<EpicTask> tasksFromManager = taskManager.getEpics();
-        assertEquals(tasksFromManager, taskManager.getHistoryManager().getHistory());
+        assertEquals(tasksFromManager, taskManager.getHistory());
     }
 
     @Test
@@ -255,7 +246,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertEquals(TaskStatus.DONE, taskManager.getSubTaskByID(3).getStatus());
 
         List<SubTask> tasksFromManager = taskManager.getSubTasks();
-        assertEquals(tasksFromManager, taskManager.getHistoryManager().getHistory());
+        assertEquals(tasksFromManager, taskManager.getHistory());
     }
 
     @Test
@@ -494,13 +485,19 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertEquals(3, taskManager.getPrioritizedTasks().first().getId(),
                 "Неверная сортировка: первой в списке идет неправильная задача");
         assertEquals(1, taskManager.getPrioritizedTasks().last().getId(),
-                "Неверная сортировка: последней ожидалась задача с tartTime = null");
+                "Неверная сортировка: последней ожидалась задача с startTime = null");
+
+        taskManager.updateTask(new Task(2,"test2_v.2", "sus", TaskStatus.IN_PROGRESS,
+                LocalDateTime.of(2022, 5, 10, 22, 0), 10));
+
+        assertEquals(2, taskManager.getPrioritizedTasks().first().getId(),
+                "Неверная сортировка при обновлении Таск с временем");
 
         setUpStreams();
         taskManager.createTask(new Task("test2", "sus",
                 LocalDateTime.of(2022, 7, 10, 11, 0), 15));
-        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim());
 
+        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim());
         assertEquals(3, taskManager.getPrioritizedTasks().size(),
                 "При отказе в создании новой Таск в checkPeriodForOccupation() задача все равно добавляется" +
                         "в приоретизированный список");
@@ -523,7 +520,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    public void threeSetEpicAndSubTaskTesting(){
+    public void threeSetSubTaskTesting(){
         taskManager.createEpic(new EpicTask("test1", "testing"));
         taskManager.createSubTask(new SubTask("test2", "sus", 1,
                 LocalDateTime.of(2022, 7, 10, 9, 15), 525));
@@ -533,6 +530,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.updateSubTask(new SubTask(2, "test2", "sus", TaskStatus.DONE, 1,
                 LocalDateTime.of(2022, 9, 9, 15, 40), 20));
 
+        //System.out.println(taskManager.getPrioritizedTasks());
         assertEquals(3, taskManager.getPrioritizedTasks().first().getId(),
                 "Неверная сортировка задач после обновления");
 
@@ -542,13 +540,73 @@ abstract class TaskManagerTest <T extends TaskManager> {
                 "Неверная сортировка задач после удаления одной СабТаски");
 
         taskManager.clearSubTasks();
-        assertEquals(1, taskManager.getPrioritizedTasks().size(),
-                "Неверно работает удаление сабтасков из sortedTasks при вызове метода clearSubTasks():" +
-                        " Ожидалось - 1, Вывод - " + taskManager.getPrioritizedTasks().size());
-
-        taskManager.clearEpics();
         assertEquals(0, taskManager.getPrioritizedTasks().size(),
-                "Неверно работает удаление эпиков из sortedTasks при вызове метода clearEpics():" +
+                "Неверно работает удаление сабтасков из sortedTasks при вызове метода clearSubTasks():" +
                         " Ожидалось - 0, Вывод - " + taskManager.getPrioritizedTasks().size());
+    }
+
+    @Test
+    public void treeSetNullTasksSortTesting(){
+        taskManager.createTask(new Task("TaskNull1", "subs", TaskStatus.IN_PROGRESS)); // 1
+        taskManager.createTask(new Task("TaskNull2", "sus")); // 2
+        taskManager.createTask(new Task("TaskNotNull", "sus",
+                LocalDateTime.of(2022, 9, 9, 15, 40), 20)); // 3
+        taskManager.createTask(new Task("TaskNull3", "sus")); // 4
+
+        assertEquals(4, taskManager.getPrioritizedTasks().last().getId(),
+                "Неверная сортировка Таск с startTime == Null");
+    }
+
+    @Test
+    public void checkValidationOfDateTimeOccupied(){
+        taskManager.createTask(new Task("mainTask", "write tests for TaskManager",
+                LocalDateTime.of(2022,7,12,9,0), 1800));
+
+        setUpStreams();
+        taskManager.createTask(new Task("test1", "isEqual.startTime(mainTask)",
+                LocalDateTime.of(2022,7,12,9,0), 5));
+        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+                "Ошибка верификации: время старта двух задач совпадает");
+        output.reset();
+
+        taskManager.createTask(new Task("test2", "isEqual.endTime(mainTask)",
+                LocalDateTime.of(2022,7,13,14,0), 60));
+        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+                "Ошибка верификации: время окончания двух задач совпадает");
+        output.reset();
+
+        taskManager.createTask(new Task("test3", "задача внутри времени mainTask",
+                LocalDateTime.of(2022,7,12,21,20), 60));
+        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+                "Ошибка верификации: новая задача полностью выполняется во время существующей");
+        output.reset();
+
+        taskManager.createTask(new Task("test4", "задача \"поглощает\" mainTask",
+                LocalDateTime.of(2022,7,12,8,59), 2600));
+        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+                "Ошибка верификации: новая задача полностью поглощает время существующей");
+        output.reset();
+
+        taskManager.createTask(new Task("test5", "задача частично пересекается с mainTask",
+                LocalDateTime.of(2022,7,13,14,30), 60));
+        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+                "Ошибка верификации: новая задача начинается до окончания предыдущей, но оканчивается позднее");
+        output.reset();
+
+        taskManager.createTask(new Task("test6", "задача частично пересекается с mainTask (2)",
+                LocalDateTime.of(2022,7,12,8,30), 240));
+        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+                "Ошибка верификации: новая задача начинается ранее, а оканчивается во время " +
+                        "выполнения основной задачи");
+    }
+
+    @Test
+    public void nullEndTimeTaskTesting(){
+        taskManager.createTask(new Task("TaskNull", "just task"));
+
+        setUpStreams();
+        taskManager.getTaskByID(1).getEndTime();
+        assertEquals("Время старта для этой задачи не задано", output.toString().trim(),
+                "Неправильное поведение при вызове getEndTime() у Таск с startTime == null");
     }
 }
