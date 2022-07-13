@@ -122,7 +122,7 @@ public class Task {
         if (startTime != null) {return startTime.plusMinutes(duration);}
         else {
             System.out.println("Время старта для этой задачи не задано");
-            return LocalDateTime.MAX;
+            return null;
         }
     }
 
