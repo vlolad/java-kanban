@@ -3,6 +3,7 @@ package net.yandex.taskmanager.services;
 import net.yandex.taskmanager.model.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public void save() {
-        try (FileWriter saving = new FileWriter(SAVING)) {
+        try (FileWriter saving = new FileWriter(SAVING, StandardCharsets.UTF_8)) {
             saving.write(TEMPLATE_SAVE);
             for (Task task : getTasks()) {
                 saving.write(toString(task) + "\n");
@@ -70,7 +71,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager newTaskManager = new FileBackedTasksManager(file);
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             int newId = 0; // для поиска последнего использованного ID
             br.readLine(); // Пропускаем первую строчку
             while (br.ready()) {
