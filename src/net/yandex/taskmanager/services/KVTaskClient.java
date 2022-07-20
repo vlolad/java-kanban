@@ -1,7 +1,5 @@
 package net.yandex.taskmanager.services;
 
-import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -14,7 +12,6 @@ public class KVTaskClient {
     private final HttpClient client;
     private final String API_TOKEN;
     private final URL serverURL;
-    private static final Gson gson = new Gson();
 
     public KVTaskClient(URL address) throws IOException, InterruptedException {
         this.client = HttpClient.newHttpClient(); //Тут this не нужно, но кажется, что так читабельнее

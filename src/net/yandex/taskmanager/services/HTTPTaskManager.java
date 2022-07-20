@@ -5,9 +5,7 @@ import net.yandex.taskmanager.model.SubTask;
 import net.yandex.taskmanager.model.Task;
 import net.yandex.taskmanager.model.TaskTypes;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
