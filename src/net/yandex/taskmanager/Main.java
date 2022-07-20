@@ -2,14 +2,17 @@ package net.yandex.taskmanager;
 import net.yandex.taskmanager.model.*;
 import net.yandex.taskmanager.services.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Поехали!");
 
-        TaskManager taskManager = Managers.getDefault();
+        new KVServer().start();
+
+        /* TaskManager taskManager = Managers.getDefault();
 
 
         taskManager.createTask(new Task("test2", "sus",
@@ -20,7 +23,7 @@ public class Main {
         taskManager.createTask(new Task("test2", "sus",
                 LocalDateTime.of(2022, 7, 10, 11, 0), 15));
 
-        System.out.println(taskManager.getPrioritizedTasks());
+        System.out.println(taskManager.getPrioritizedTasks()); */
         // Создайте 2 задачи, один эпик с 3 подзадачами, а другой эпик без подзадач.
         /*taskManager.createTask(new Task("Task1", "hehe", TaskStatus.NEW)); // id 1
         taskManager.createTask(new Task("Task2", "lol", TaskStatus.NEW)); // id 2
