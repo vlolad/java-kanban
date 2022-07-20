@@ -1,8 +1,8 @@
 package net.yandex.taskmanager.services;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class KVServer {
                     return;
                 }
                 String value = data.get(key);
-                sendText (h, value);
+                sendText(h, value);
             }
         } finally {
             h.close();
