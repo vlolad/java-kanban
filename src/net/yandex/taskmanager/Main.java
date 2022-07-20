@@ -7,10 +7,24 @@ import java.time.LocalDateTime;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         System.out.println("Поехали!");
 
         new KVServer().start();
+
+        KVTaskClient client = new KVTaskClient("http://localhost:8078");
+
+        System.out.println(client.getAPI_TOKEN());
+
+        System.out.println("Сохраняем значение: key=vladik || value=My test server is great!");
+        client.put("vladik", "My test server is great!");
+
+        System.out.println("Извлекаем значение: " + client.load("vladik"));
+
+        System.out.println("Меняем значение: key=vladik || value=Test server is already old!");
+        client.put("vladik", "Test server is already old!");
+
+        System.out.println("Снова извлекаем значение: " + client.load("vladik"));
 
         /* TaskManager taskManager = Managers.getDefault();
 
