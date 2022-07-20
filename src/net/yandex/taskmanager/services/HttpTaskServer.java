@@ -10,6 +10,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -23,10 +24,10 @@ public class HttpTaskServer {
     private static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final Gson gson = new Gson();
-    private final TaskManager manager = Managers.getFileBacked("httpserver");
+    private final TaskManager manager = Managers.getHTTPManager(new URL("http://localhost:8078"));
     HttpServer httpServer;
 
-    public HttpTaskServer() throws IOException {
+    public HttpTaskServer() throws IOException, InterruptedException {
         startServer();
     }
 
@@ -35,6 +36,8 @@ public class HttpTaskServer {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        new KVServer().start();
+
         HttpTaskServer server = new HttpTaskServer();
 
         server.manager.createTask(new Task("test1", "sus"));
