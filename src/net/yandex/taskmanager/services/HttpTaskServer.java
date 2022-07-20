@@ -137,7 +137,7 @@ public class HttpTaskServer {
                 default:
                     response = "Данный запрос (пока) не реализован. Проверьте, пожалуйста, метод и адрес.";
 
-                    exchange.sendResponseHeaders(501, 0);
+                    exchange.sendResponseHeaders(405, 0);
                     try (OutputStream os = exchange.getResponseBody()) {
                         os.write(response.getBytes());
                     }
@@ -230,7 +230,7 @@ public class HttpTaskServer {
                 default:
                     response = "Данный запрос (пока) не реализован. Проверьте, пожалуйста, метод и адрес.";
 
-                    exchange.sendResponseHeaders(501, 0);
+                    exchange.sendResponseHeaders(405, 0);
                     try (OutputStream os = exchange.getResponseBody()) {
                         os.write(response.getBytes());
                     }
@@ -347,7 +347,7 @@ public class HttpTaskServer {
                 default:
                     response = "Данный запрос (пока) не реализован. Проверьте, пожалуйста, метод и адрес.";
 
-                    exchange.sendResponseHeaders(501, 0);
+                    exchange.sendResponseHeaders(405, 0);
                     try (OutputStream os = exchange.getResponseBody()) {
                         os.write(response.getBytes());
                     }
@@ -474,7 +474,7 @@ public class HttpTaskServer {
                 default:
                     response = "Данный запрос (пока) не реализован. Проверьте, пожалуйста, метод и адрес.";
 
-                    exchange.sendResponseHeaders(501, 0);
+                    exchange.sendResponseHeaders(405, 0);
                     try (OutputStream os = exchange.getResponseBody()) {
                         os.write(response.getBytes());
                     }
@@ -531,7 +531,7 @@ public class HttpTaskServer {
             } else {
                 response = "Данный запрос (пока) не реализован. Проверьте, пожалуйста, метод и адрес.";
 
-                exchange.sendResponseHeaders(501, 0);
+                exchange.sendResponseHeaders(405, 0);
                 try (OutputStream os = exchange.getResponseBody()) {
                     os.write(response.getBytes());
                 }
