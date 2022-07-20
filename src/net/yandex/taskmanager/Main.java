@@ -3,6 +3,7 @@ import net.yandex.taskmanager.model.*;
 import net.yandex.taskmanager.services.*;
 
 import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDateTime;
 
 public class Main {
@@ -10,9 +11,15 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         System.out.println("Поехали!");
 
+        StringBuilder builder = new StringBuilder();
+        builder.append("Heh \n");
+        builder.append("lol");
+
+        System.out.println(builder);
+
         new KVServer().start();
 
-        KVTaskClient client = new KVTaskClient("http://localhost:8078");
+        KVTaskClient client = new KVTaskClient(new URL("http://localhost:8078"));
 
         System.out.println(client.getAPI_TOKEN());
 
@@ -26,6 +33,35 @@ public class Main {
 
         System.out.println("Снова извлекаем значение: " + client.load("vladik"));
 
+        HTTPTaskManager manager = new HTTPTaskManager(new URL("http://localhost:8078"));
+
+        manager.createTask(new Task("test1", "sus"));
+        manager.createEpic(new EpicTask("Epic1", "neew"));
+        manager.createSubTask(new SubTask("SubTask1", "neeew", TaskStatus.IN_PROGRESS, 2,
+                LocalDateTime.of(2022, 7, 11, 20, 0), 15));
+        manager.createSubTask(new SubTask("SubTask2", "sus", TaskStatus.NEW, 2,
+                LocalDateTime.of(2022, 7, 11, 22, 0), 60));
+        manager.createTask(new Task("TaskNew", "newTask", TaskStatus.NEW,
+                LocalDateTime.of(2022, 7, 10, 20, 0), 30));
+
+        manager.getTaskByID(1);
+        manager.getSubTaskByID(3);
+        manager.getEpicByID(2);
+        manager.getTaskByID(5);
+        manager.getSubTaskByID(4);
+        manager.getTaskByID(1);
+
+        System.out.println("\n");
+
+        HTTPTaskManager newManager = new HTTPTaskManager(new URL("http://localhost:8078"));
+        newManager.load();
+
+        System.out.println("А вот и загруженный с сервера менеджер!");
+        System.out.println(newManager.getTasks());
+        System.out.println(newManager.getEpics());
+        System.out.println(newManager.getSubTasks());
+        System.out.println(newManager.getHistory());
+        System.out.println(newManager.getPrioritizedTasks());
         /* TaskManager taskManager = Managers.getDefault();
 
 
