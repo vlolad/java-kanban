@@ -18,8 +18,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         SAVING = file;
     }
 
+    public FileBackedTasksManager(){
+        SAVING = null;
+    }
+
     public File getSAVE() {
         return SAVING;
+    }
+
+    public String getTemplateSave(){
+        return TEMPLATE_SAVE;
     }
 
     public static void main(String[] args) {
@@ -229,7 +237,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return task;
     }
 
-    private String toString(Task task) {
+    protected String toString(Task task) {
         String[] line = new String[8];
         line[0] = Integer.toString(task.getId());
         line[2] = task.getName();
@@ -256,7 +264,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return String.join(",", line);
     }
 
-    private static Task fromString(String value) {
+    protected static Task fromString(String value) {
         String[] line = value.split(",");
         //assert line[0] != null;
         switch (TaskTypes.valueOf(line[1])) {
@@ -282,7 +290,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return null;
     }
 
-    private static String toString(HistoryManager manager) {
+    protected static String toString(HistoryManager manager) {
         StringJoiner result = new StringJoiner(",");
         for (Task task : manager.getHistory()) {
             result.add(Integer.toString(task.getId()));
@@ -290,7 +298,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return result.toString();
     }
 
-    private static List<Integer> historyFromString(String value) {
+    protected static List<Integer> historyFromString(String value) {
         List<Integer> result = new ArrayList<>();
         for (String num : value.split(",")) {
             result.add(Integer.parseInt(num));
@@ -298,7 +306,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return result;
     }
 
-    private static class ManagerSaveException extends RuntimeException {
+    protected static class ManagerSaveException extends RuntimeException {
         public ManagerSaveException(String message) {
             super(message);
         }

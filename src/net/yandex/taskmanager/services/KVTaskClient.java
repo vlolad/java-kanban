@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -12,16 +13,16 @@ public class KVTaskClient {
 
     private final HttpClient client;
     private final String API_TOKEN;
-    private final String serverURL;
+    private final URL serverURL;
     private static final Gson gson = new Gson();
 
-    public KVTaskClient(String address) throws IOException, InterruptedException {
-        client = HttpClient.newHttpClient();
-        serverURL = address;
-        URI url = URI.create(serverURL + "/register");
+    public KVTaskClient(URL address) throws IOException, InterruptedException {
+        this.client = HttpClient.newHttpClient(); //Тут this не нужно, но кажется, что так читабельнее
+        this.serverURL = address;
+        URI url = URI.create(address.toString() + "/register");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> token = client.send(request, HttpResponse.BodyHandlers.ofString());
-        API_TOKEN = token.body();
+        this.API_TOKEN = token.body();
     }
 
     public String getAPI_TOKEN() {
