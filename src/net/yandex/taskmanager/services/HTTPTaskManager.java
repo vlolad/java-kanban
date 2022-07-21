@@ -7,19 +7,15 @@ import net.yandex.taskmanager.model.TaskTypes;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 
 public class HTTPTaskManager extends FileBackedTasksManager implements TaskManager {
 
-    private final URL url;
-    private static KVTaskClient client;
+    private final KVTaskClient client;
     private String keySaving = "default";
 
     public HTTPTaskManager(URL address) throws IOException, InterruptedException {
-        this.url = address;
         client = new KVTaskClient(address);
-
         load();
     }
 
@@ -45,7 +41,7 @@ public class HTTPTaskManager extends FileBackedTasksManager implements TaskManag
             for (SubTask task : getSubTasks()) {
                 saving.append(toString(task)).append("\n");
             }
-            saving.append(toString(getHistoryManager()));
+            saving.append(toString(getHistoryManager())).append(" ");
             client.put(getKeySaving(), saving.toString());
 
         } catch (IOException | InterruptedException e) {
@@ -59,11 +55,15 @@ public class HTTPTaskManager extends FileBackedTasksManager implements TaskManag
             System.out.println("Загрузка с сервера не удалась. Возможно, менеджер ещё не сохранялся.");
             return;
         }
+        // Очистка всех мап, чтобы полностью обновить менеджер
+        clearEpics();
+        clearSubTasks();
+        clearTasks();
 
         String[] lineManager = loadedManager.split("\n");
         int newId = 0; // Для поиска последнего использованного id.
 
-        System.out.println(Arrays.toString(lineManager));
+        //System.out.println(Arrays.toString(lineManager));
         // Задачи записаны в промежутке [1] - [length()-2] // История на [length()-1]
         for (int i = 1; i <= (lineManager.length - 2); i++) {
             String[] record = lineManager[i].split(",");
@@ -90,16 +90,18 @@ public class HTTPTaskManager extends FileBackedTasksManager implements TaskManag
                     continue;
             }
         }
-        List<Integer> historyId = historyFromString(lineManager[lineManager.length - 1]); // Получаем историю
-        for (Integer id : historyId) {
-            if (getEpicsMap().containsKey(id)) {
-                getHistoryManager().add(getEpicsMap().get(id));
-            } else if (getSubTasksMap().containsKey(id)) {
-                getHistoryManager().add(getSubTasksMap().get(id));
-            } else if (getTasksMap().containsKey(id)) {
-                getHistoryManager().add(getTasksMap().get(id));
-            } else {
-                throw new ManagerSaveException("Ошибка в загрузке истории просмотров.");
+        if (!lineManager[lineManager.length - 1].isBlank()){
+            List<Integer> historyId = historyFromString(lineManager[lineManager.length - 1]); // Получаем историю
+            for (Integer id : historyId) {
+                if (getEpicsMap().containsKey(id)) {
+                    getHistoryManager().add(getEpicsMap().get(id));
+                } else if (getSubTasksMap().containsKey(id)) {
+                    getHistoryManager().add(getSubTasksMap().get(id));
+                } else if (getTasksMap().containsKey(id)) {
+                    getHistoryManager().add(getTasksMap().get(id));
+                } else {
+                    throw new ManagerSaveException("Ошибка в загрузке истории просмотров.");
+                }
             }
         }
 

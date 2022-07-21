@@ -1,5 +1,6 @@
 package net.yandex.taskmanager.services;
 
+import com.google.gson.reflect.TypeToken;
 import net.yandex.taskmanager.model.*;
 
 import com.google.gson.Gson;
@@ -19,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class HttpTaskServer {
+public class HTTPTaskServer {
 
     private static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
@@ -27,7 +28,7 @@ public class HttpTaskServer {
     private final TaskManager manager = Managers.getHTTPManager(new URL("http://localhost:8078"));
     HttpServer httpServer;
 
-    public HttpTaskServer() throws IOException, InterruptedException {
+    public HTTPTaskServer() throws IOException, InterruptedException {
         startServer();
     }
 
@@ -36,9 +37,9 @@ public class HttpTaskServer {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        new KVServer().start();
+        /*new KVServer().start();
 
-        HttpTaskServer server = new HttpTaskServer();
+        HTTPTaskServer server = new HTTPTaskServer();
 
         server.manager.createTask(new Task("test1", "sus"));
         server.manager.createEpic(new EpicTask("Epic1", "neew"));
@@ -64,6 +65,15 @@ public class HttpTaskServer {
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+        URI thirdUrl = URI.create("http://localhost:8080/tasks/history");
+        HttpRequest GETHistory = HttpRequest.newBuilder().uri(url).GET().build();
+        HttpResponse<String> responseGETHistory = client.send(GETHistory, HttpResponse.BodyHandlers.ofString());
+        List<Task> gettingHistory = gson.fromJson(responseGETHistory.body(),
+                new TypeToken<List<Task>>() {}.getType());
+
+        System.out.println(gettingHistory);
+
+        System.out.println(server.manager.getHistory().equals(gettingHistory));
         /*SubTask newTask = new SubTask("SubTask2", "sus", TaskStatus.NEW,
                 99, LocalDateTime.of(2022, 7, 11, 22, 0), 60);
 
@@ -105,17 +115,13 @@ public class HttpTaskServer {
                     // Собираем ответ. Если мама пустая - её в ответ не добавляем
                     StringBuilder result = new StringBuilder();
                     if (!manager.getTasks().isEmpty()) {
-                        result.append(gson.toJson(manager.getTasks()));
+                        result.append(gson.toJson(manager.getTasks())).append("\n");
                     }
                     if (!manager.getEpics().isEmpty()) {
-                        result.append(gson.toJson(manager.getEpics()));
+                        result.append(gson.toJson(manager.getEpics())).append("\n");
                     }
                     if (!manager.getSubTasks().isEmpty()) {
-                        result.append(gson.toJson(manager.getSubTasks()));
-                    }
-                    if (!manager.getPrioritizedTasks().isEmpty()){
-                        result.append("\n");
-                        result.append(gson.toJson(manager.getPrioritizedTasks()));
+                        result.append(gson.toJson(manager.getSubTasks())).append("\n");
                     }
 
                     response = result.toString();
@@ -215,8 +221,15 @@ public class HttpTaskServer {
                     String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
 
                     Task newTask = gson.fromJson(body, Task.class);
+                    boolean check = true;
+                    for (Task task : manager.getTasks()) {
+                        if (task.getId() == newTask.getId()) {
+                            check = false;
+                            break;
+                        }
+                    }
 
-                    if (manager.getTaskByID(id) == null){
+                    if (check){
                         manager.createTask(newTask);
                         response = "Задача успешно создана!";
                     } else {
@@ -332,8 +345,15 @@ public class HttpTaskServer {
                     String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
 
                     EpicTask newTask = gson.fromJson(body, EpicTask.class);
+                    boolean check = true;
+                    for (EpicTask task : manager.getEpics()) {
+                        if (task.getId() == newTask.getId()) {
+                            check = false;
+                            break;
+                        }
+                    }
 
-                    if (manager.getEpicByID(id) == null){
+                    if (check){
                         manager.createEpic(newTask);
                         response = "Эпик успешно создан!";
                     } else {
@@ -460,7 +480,15 @@ public class HttpTaskServer {
                         break;
                     }
 
-                    if (manager.getSubTaskByID(id) == null){
+                    boolean check = true;
+                    for (SubTask task : manager.getSubTasks()) {
+                        if (task.getId() == newTask.getId()) {
+                            check = false;
+                            break;
+                        }
+                    }
+
+                    if (check){
                         manager.createSubTask(newTask);
                         response = "Подзадача успешно создана!";
                     } else {

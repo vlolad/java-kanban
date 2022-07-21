@@ -300,7 +300,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     protected static List<Integer> historyFromString(String value) {
         List<Integer> result = new ArrayList<>();
-        for (String num : value.split(",")) {
+        for (String num : value.trim().split(",")) {
             result.add(Integer.parseInt(num));
         }
         return result;

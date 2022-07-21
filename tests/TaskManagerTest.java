@@ -27,6 +27,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
         System.setOut(new PrintStream(output));
     }
 
+    public ByteArrayOutputStream getOutput(){
+        return output;
+    }
+
     @AfterEach
     public void cleanUpStreams() {
         System.setOut(null);
@@ -84,7 +88,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public void createSubTaskTestingNoSuchEpic() {
         setUpStreams();
         taskManager.createSubTask(new SubTask(2, "sub2", "newSub", TaskStatus.NEW, 1));
-        assertEquals("There is no epic with ID 1", output.toString().trim(),
+        assertTrue(output.toString().contains("There is no epic with ID 1"),
                 "Неправильный вывод при попытке создать Сабтаск у несуществующего Эпика");
     }
 
@@ -207,7 +211,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public void getTasksByIdTestingNoSuchId() {
         setUpStreams();
         assertNull(taskManager.getTaskByID(99));
-        assertEquals("Task not found.", output.toString().trim(),
+        assertTrue(output.toString().contains("Task not found."),
                 "Неверный вывод getTaskByID(), если Таск с заданным ID не существует");
     }
 
@@ -230,7 +234,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public void getEpicByIdTestingNoSuchId() {
         setUpStreams();
         assertNull(taskManager.getEpicByID(99));
-        assertEquals("Epic not found.", output.toString().trim(),
+        assertTrue(output.toString().contains("Epic not found."),
                 "Неверный вывод метода getEpicByID(), если Эпик с заданным ID не существует");
     }
 
@@ -253,7 +257,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public void getSubTaskByIdTestingNoSuchId() {
         setUpStreams();
         assertNull(taskManager.getSubTaskByID(99));
-        assertEquals("Subtask not found.", output.toString().trim(),
+        assertTrue(output.toString().contains("Subtask not found."),
                 "Неверный вывод getSubTaskByID(), если Сабтаск с заданным ID не существует");
     }
 
@@ -290,7 +294,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public void deleteTaskByIdTestingNoSuchTask() {
         setUpStreams();
         taskManager.deleteTaskByID(1);
-        assertEquals("Task not exist.", output.toString().trim(),
+        assertTrue(output.toString().contains("Task not exist."),
                 "Неверный вывод метода deleteTaskByID(), если Таск не существует.");
     }
 
@@ -311,7 +315,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public void deleteEpicByIdTestingNoSuchEpic() {
         setUpStreams();
         taskManager.deleteEpicByID(1);
-        assertEquals("Epic not exist.", output.toString().trim(),
+        assertTrue(output.toString().contains("Epic not exist."),
                 "Неправильный вывод deleteEpicByID(), если Эпик не существует.");
     }
 
@@ -335,7 +339,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public void deleteSubTaskByIdTestingNoSuchSubTask() {
         setUpStreams();
         taskManager.deleteSubTaskByID(99);
-        assertEquals("Subtask not exist.", output.toString().trim(),
+        assertTrue(output.toString().contains("Subtask not exist."),
                 "Неправильный вывод deleteSubTaskByID() если Сабтаск не существует.");
     }
 
@@ -354,7 +358,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createTask(new Task(1, "testTask1", "subs", TaskStatus.NEW));
 
         taskManager.updateTask(new Task(7, "updTask", "sus", TaskStatus.IN_PROGRESS));
-        assertEquals("Task with this ID is not exist.", output.toString().trim(),
+        assertTrue(output.toString().contains("Task with this ID is not exist."),
                 "Неверный вывод updateTask(), если Таск не существует.");
     }
 
@@ -373,7 +377,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createEpic(new EpicTask(1, "testTask1", "subs"));
 
         taskManager.updateEpic(new EpicTask(7, "updTask", "sus"));
-        assertEquals("Epic with this ID is not exist.", output.toString().trim(),
+        assertTrue(output.toString().contains("Epic with this ID is not exist."),
                 "Неверный вывод updateEpic(), если Эпик не существует.");
     }
 
@@ -398,7 +402,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
 
         taskManager.updateSubTask(new SubTask(99, "updSub", "sus", TaskStatus.DONE, 1));
-        assertEquals("Subtask or Epic with this ID is not exist.", output.toString().trim(),
+        assertTrue(output.toString().contains("Subtask or Epic with this ID is not exist."),
                 "Неверный вывод updateSubTask(), если Сабтаск не существует.");
     }
 
@@ -410,7 +414,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createSubTask(new SubTask(3, "sub2", "newSub", TaskStatus.DONE, 1));
 
         taskManager.updateSubTask(new SubTask(2, "updSub", "sus", TaskStatus.DONE, 99));
-        assertEquals("Subtask or Epic with this ID is not exist.", output.toString().trim(),
+        assertTrue(output.toString().contains("Subtask or Epic with this ID is not exist."),
                 "Неверный вывод updateSubTask(), если Эпик не существует.");
     }
 
@@ -497,7 +501,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createTask(new Task("test2", "sus",
                 LocalDateTime.of(2022, 7, 10, 11, 0), 15));
 
-        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim());
+        assertTrue(output.toString().contains("В данный период выполняется другая задача, задача не создана."));
         assertEquals(3, taskManager.getPrioritizedTasks().size(),
                 "При отказе в создании новой Таск в checkPeriodForOccupation() задача все равно добавляется" +
                         "в приоретизированный список");
@@ -565,37 +569,37 @@ abstract class TaskManagerTest<T extends TaskManager> {
         setUpStreams();
         taskManager.createTask(new Task("test1", "isEqual.startTime(mainTask)",
                 LocalDateTime.of(2022, 7, 12, 9, 0), 5));
-        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+        assertTrue(output.toString().contains("В данный период выполняется другая задача, задача не создана."),
                 "Ошибка верификации: время старта двух задач совпадает");
         output.reset();
 
         taskManager.createTask(new Task("test2", "isEqual.endTime(mainTask)",
                 LocalDateTime.of(2022, 7, 13, 14, 0), 60));
-        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+        assertTrue(output.toString().contains("В данный период выполняется другая задача, задача не создана."),
                 "Ошибка верификации: время окончания двух задач совпадает");
         output.reset();
 
         taskManager.createTask(new Task("test3", "задача внутри времени mainTask",
                 LocalDateTime.of(2022, 7, 12, 21, 20), 60));
-        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+        assertTrue(output.toString().contains("В данный период выполняется другая задача, задача не создана."),
                 "Ошибка верификации: новая задача полностью выполняется во время существующей");
         output.reset();
 
         taskManager.createTask(new Task("test4", "задача \"поглощает\" mainTask",
                 LocalDateTime.of(2022, 7, 12, 8, 59), 2600));
-        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+        assertTrue(output.toString().contains("В данный период выполняется другая задача, задача не создана."),
                 "Ошибка верификации: новая задача полностью поглощает время существующей");
         output.reset();
 
         taskManager.createTask(new Task("test5", "задача частично пересекается с mainTask",
                 LocalDateTime.of(2022, 7, 13, 14, 30), 60));
-        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+        assertTrue(output.toString().contains("В данный период выполняется другая задача, задача не создана."),
                 "Ошибка верификации: новая задача начинается до окончания предыдущей, но оканчивается позднее");
         output.reset();
 
         taskManager.createTask(new Task("test6", "задача частично пересекается с mainTask (2)",
                 LocalDateTime.of(2022, 7, 12, 8, 30), 240));
-        assertEquals("В данный период выполняется другая задача, задача не создана.", output.toString().trim(),
+        assertTrue(output.toString().contains("В данный период выполняется другая задача, задача не создана."),
                 "Ошибка верификации: новая задача начинается ранее, а оканчивается во время " +
                         "выполнения основной задачи");
         output.reset();
@@ -607,7 +611,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         setUpStreams();
         assertNull(taskManager.getTaskByID(1).getEndTime());
-        assertEquals("Время старта для этой задачи не задано", output.toString().trim(),
+        assertTrue(output.toString().contains("Время старта для этой задачи не задано"),
                 "Неправильное поведение при вызове getEndTime() у Таск с startTime == null");
     }
 }

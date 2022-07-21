@@ -130,9 +130,9 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         LocalDateTime expectedStartTime = LocalDateTime.of(2022, 7, 11, 20, 0);
         LocalDateTime expectedEndTime = LocalDateTime.of(2022, 7, 11, 23, 0);
         assertEquals(expectedStartTime, newTaskManager.getEpicByID(2).getStartTime(),
-                "Неправильно расчитывается время начала Эпика");
+                "Неправильно рассчитывается время начала Эпика");
         assertEquals(expectedEndTime, newTaskManager.getEpicByID(2).getEndTime(),
-                "Неправильно расчитывается время окончания Эпика");
+                "Неправильно рассчитывается время окончания Эпика");
     }
 
     /*@Test
