@@ -6,17 +6,28 @@ import net.yandex.taskmanager.model.Task;
 import net.yandex.taskmanager.model.TaskTypes;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 public class HTTPTaskManager extends FileBackedTasksManager implements TaskManager {
 
     private final KVTaskClient client;
     private String keySaving = "default";
+    private final String TASKS = "tasks";
+    private final String EPICS = "epics";
+    private final String SUBTASKS = "subtasks";
+    private final String HISTORY = "history";
 
-    public HTTPTaskManager(URL address) throws IOException, InterruptedException {
-        client = new KVTaskClient(address);
-        load();
+    public HTTPTaskManager(String address, boolean check) {
+            client = new KVTaskClient(address);
+            if (check) load();
+    }
+
+    public HTTPTaskManager(String address) {
+        this(address, false);
+    }
+
+    public HTTPTaskManager() {
+        this("http://localhost:8078", false);
     }
 
     public String getKeySaving() {
@@ -29,7 +40,6 @@ public class HTTPTaskManager extends FileBackedTasksManager implements TaskManag
 
     @Override
     public void save() {
-        try {
             StringBuilder saving = new StringBuilder(); // Собираю весь менеджер в строку
             saving.append(getTemplateSave()); // Сначала шаблон
             for (Task task : getTasks()) {
@@ -43,13 +53,9 @@ public class HTTPTaskManager extends FileBackedTasksManager implements TaskManag
             }
             saving.append(toString(getHistoryManager())).append(" ");
             client.put(getKeySaving(), saving.toString());
-
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
-    public void load() throws IOException, InterruptedException {
+    public void load() {
         String loadedManager = client.load(keySaving);
         if (loadedManager.isBlank()) {
             System.out.println("Загрузка с сервера не удалась. Возможно, менеджер ещё не сохранялся.");
@@ -87,9 +93,9 @@ public class HTTPTaskManager extends FileBackedTasksManager implements TaskManag
                     continue;
                 case TASK:
                     getTasksMap().put(Integer.parseInt(record[0]), fromString(lineManager[i]));
-                    continue;
             }
         }
+
         if (!lineManager[lineManager.length - 1].isBlank()){
             List<Integer> historyId = historyFromString(lineManager[lineManager.length - 1]); // Получаем историю
             for (Integer id : historyId) {
