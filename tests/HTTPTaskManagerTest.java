@@ -6,7 +6,6 @@ import org.junit.jupiter.api.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.URL;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,12 +14,12 @@ public class HTTPTaskManagerTest extends TaskManagerTest<HTTPTaskManager> {
 
     KVServer server;
 
-    public HTTPTaskManagerTest() throws IOException {
+    public HTTPTaskManagerTest() {
     }
 
     @BeforeEach
-    public void createTaskManager() throws IOException, InterruptedException {
-        setTaskManager(new HTTPTaskManager(new URL("http://localhost:8078")));
+    public void createTaskManager() {
+        setTaskManager(new HTTPTaskManager());
     }
 
     @BeforeEach
@@ -36,15 +35,17 @@ public class HTTPTaskManagerTest extends TaskManagerTest<HTTPTaskManager> {
     }
 
     @Test
-    public void loadEmptyManager() throws IOException, InterruptedException {
+    public void loadEmptyManager() {
         setUpStreams();
-        getTaskManager().load();
-        assertTrue(getOutput().toString().contains("Загрузка с сервера не удалась. Возможно, менеджер ещё не сохранялся."),
-                "Неправильный вывод при попытке загрузить несохраненный/пустой менеджер.");
+        KVTaskClient.TaskClientException exc =
+                assertThrows(KVTaskClient.TaskClientException.class, () -> getTaskManager().load(),
+                        "Ожидалось исключение TaskClientException.");
+        assertEquals(exc.getMessage(), "Загрузка данных с сервера не удалась, код 404",
+                "Ожидался код от сервера 404.");
     }
 
     @Test
-    public void saveAndLoadClearEpic() throws IOException, InterruptedException {
+    public void saveAndLoadClearEpic() {
         getTaskManager().createEpic(new EpicTask("test1", "sus"));
         getTaskManager().load();
         assertEquals(1, getTaskManager().getEpics().size(), "Эпик не загружен.");
@@ -54,7 +55,7 @@ public class HTTPTaskManagerTest extends TaskManagerTest<HTTPTaskManager> {
     }
 
     @Test
-    public void saveAndLoadClearHistory() throws IOException, InterruptedException {
+    public void saveAndLoadClearHistory() {
         getTaskManager().createTask(new Task("test1", "sus"));
         getTaskManager().getTaskByID(1);
         getTaskManager().deleteTaskByID(1);
@@ -64,7 +65,7 @@ public class HTTPTaskManagerTest extends TaskManagerTest<HTTPTaskManager> {
     }
 
     @Test
-    public void SaveAndLoadManagerNormalBehavior() throws IOException, InterruptedException {
+    public void SaveAndLoadManagerNormalBehavior() {
         getTaskManager().createTask(new Task("test1", "sus"));
         getTaskManager().createEpic(new EpicTask("test2", "sus"));
         getTaskManager().createSubTask(new SubTask("test1", "sus", 2));
@@ -89,7 +90,7 @@ public class HTTPTaskManagerTest extends TaskManagerTest<HTTPTaskManager> {
     }
 
     @Test
-    public void SaveAndLoadTasksWithDataAndTime() throws IOException, InterruptedException {
+    public void SaveAndLoadTasksWithDataAndTime() {
         getTaskManager().createTask(new Task("Task123", "hehe", TaskStatus.NEW,
                 LocalDateTime.of(2022, 7, 10, 20, 0), 30));
         getTaskManager().createEpic(new EpicTask("FirstEpic", "boom"));
