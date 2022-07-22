@@ -25,7 +25,7 @@ public class HTTPTaskServer {
     private static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final Gson gson = new Gson();
-    private final TaskManager manager = Managers.getHTTPManager(new URL("http://localhost:8078"));
+    private final TaskManager manager = Managers.getDefault();
     HttpServer httpServer;
 
     public HTTPTaskServer() throws IOException, InterruptedException {
