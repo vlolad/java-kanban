@@ -3,12 +3,11 @@ import net.yandex.taskmanager.model.*;
 import net.yandex.taskmanager.services.*;
 
 import java.io.IOException;
-import java.net.URL;
 import java.time.LocalDateTime;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) {
         System.out.println("Поехали!");
 
         StringBuilder builder = new StringBuilder();
@@ -17,9 +16,13 @@ public class Main {
 
         System.out.println(builder);
 
-        new KVServer().start();
+        try {
+            new KVServer().start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        KVTaskClient client = new KVTaskClient(new URL("http://localhost:8078"));
+        KVTaskClient client = new KVTaskClient("http://localhost:8078");
 
         System.out.println(client.getAPI_TOKEN());
 
@@ -33,7 +36,7 @@ public class Main {
 
         System.out.println("Снова извлекаем значение: " + client.load("vladik"));
 
-        HTTPTaskManager manager = new HTTPTaskManager(new URL("http://localhost:8078"));
+        HTTPTaskManager manager = new HTTPTaskManager();
 
         manager.createTask(new Task("test1", "sus"));
         manager.createEpic(new EpicTask("Epic1", "neew"));
@@ -53,7 +56,7 @@ public class Main {
 
         System.out.println("\n");
 
-        HTTPTaskManager newManager = new HTTPTaskManager(new URL("http://localhost:8078"));
+        HTTPTaskManager newManager = new HTTPTaskManager();
         newManager.load();
 
         System.out.println("А вот и загруженный с сервера менеджер!");

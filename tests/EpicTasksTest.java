@@ -14,9 +14,9 @@ public class EpicTasksTest {
 
     @BeforeEach
     public void createTaskManager() {
-        taskManager = Managers.getDefault();
+        taskManager = Managers.getInMemoryTaskManager();
         taskManager.createEpic(new EpicTask(1, "test", "testing"));
-        lastId = 2; // Необхоидма для запоминания, какой ID создавался последним
+        lastId = 2; // Необходима для запоминания, какой ID создавался последним
     }
 
     @Test

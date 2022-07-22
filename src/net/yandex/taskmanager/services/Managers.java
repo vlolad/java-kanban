@@ -1,24 +1,22 @@
 package net.yandex.taskmanager.services;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 
 public class Managers {
 
-    public static TaskManager getDefault() {
-        return new InMemoryTaskManager();
+    public static HTTPTaskManager getDefault() {
+        return new HTTPTaskManager();
     }
 
     public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }
 
-    public static FileBackedTasksManager getFileBacked(String csvFileName){
+    public static FileBackedTasksManager getFileBacked(String csvFileName) {
         return new FileBackedTasksManager(new File(csvFileName + ".csv"));
     }
 
-    public static HTTPTaskManager getHTTPManager(URL address) throws IOException, InterruptedException {
-        return new HTTPTaskManager(address);
+    public static InMemoryTaskManager getInMemoryTaskManager() {
+        return new InMemoryTaskManager();
     }
 }
