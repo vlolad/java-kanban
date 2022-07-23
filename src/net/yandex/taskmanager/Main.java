@@ -2,15 +2,38 @@ package net.yandex.taskmanager;
 import net.yandex.taskmanager.model.*;
 import net.yandex.taskmanager.services.*;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        StringBuilder builder = new StringBuilder();
+        InMemoryTaskManager manager = Managers.getInMemoryTaskManager();
+
+        manager.createEpic(new EpicTask(1, "Epic1", "neew"));
+        manager.createSubTask(new SubTask(2, "SubTask2", "sus", TaskStatus.DONE, 1));
+        System.out.println(manager.getEpicByID(1));
+
+        Task convertedEpic = manager.getEpicByID(1);
+        System.out.println("cho?? - " + convertedEpic);
+
+        EpicTask backedEpic = (EpicTask) convertedEpic;
+        System.out.println(backedEpic);
+        System.out.println(backedEpic.equals(manager.getEpicByID(1)));
+
+        System.out.println("\n" + convertedEpic.getClass().getSimpleName() + "\n"
+                + backedEpic.getClass().getSimpleName() + "\n"
+                + ((SubTask) manager.getSubTaskByID(2)).getClass().getSimpleName() + "\n");
+
+        ArrayList<EpicTask> list = new ArrayList<>();
+        list.add(backedEpic);
+        list.add((EpicTask) manager.getEpicByID(1));
+
+        methodToGet(list);
+
+        /*StringBuilder builder = new StringBuilder();
         builder.append("Heh \n");
         builder.append("lol");
 
@@ -56,15 +79,14 @@ public class Main {
 
         System.out.println("\n");
 
-        HTTPTaskManager newManager = new HTTPTaskManager();
-        newManager.load();
+        HTTPTaskManager newManager = new HTTPTaskManager("http://localhost:8078", true);
 
         System.out.println("А вот и загруженный с сервера менеджер!");
         System.out.println(newManager.getTasks());
         System.out.println(newManager.getEpics());
         System.out.println(newManager.getSubTasks());
         System.out.println(newManager.getHistory());
-        System.out.println(newManager.getPrioritizedTasks());
+        System.out.println(newManager.getPrioritizedTasks()); */
         /* TaskManager taskManager = Managers.getDefault();
 
 
@@ -129,6 +151,11 @@ public class Main {
         taskManager.getTaskByID(8);
         System.out.println(taskManager.getHistoryManager());// [8]
  */
+    }
+
+    private static <T> void methodToGet(ArrayList<T> list) {
+        System.out.println(list.getClass());
+        System.out.println(list.getClass().getSimpleName());
     }
 }
 

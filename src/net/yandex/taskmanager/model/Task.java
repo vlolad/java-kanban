@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
-    private int id;
+    private Integer id;
     private String name;
     private String description;
     private TaskStatus status;
@@ -70,11 +70,11 @@ public class Task {
                 + showBody + "» | status=«" + status + "»}";
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -132,7 +132,7 @@ public class Task {
         if (obj == null) return false;
         if (this.getClass() != obj.getClass()) return false;
         Task otherTask = (Task) obj;
-        return (id == otherTask.getId()) &&
+        return (Objects.equals(id, otherTask.getId())) &&
                 Objects.equals(name, otherTask.getName()) &&
                 Objects.equals(description, otherTask.getDescription()) &&
                 Objects.equals(status, otherTask.getStatus()) &&

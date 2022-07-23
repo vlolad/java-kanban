@@ -350,7 +350,7 @@ public class InMemoryTaskManager implements TaskManager {
                 }*/
                 if (task.getStartTime() == null) {
                     return false;
-                } else if (task.getId() == newTask.getId()) {
+                } else if (Objects.equals(task.getId(), newTask.getId())) {
                     continue;
                 } else if (!newTask.getEndTime().isAfter(task.getStartTime())
                         || !newTask.getStartTime().isBefore(task.getEndTime())) {
@@ -412,5 +412,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected void setID(int newId) { // Метод необходим для корректной загрузки из файла
         id = newId;
+    }
+
+    public int getId() {
+        return id;
     }
 }
