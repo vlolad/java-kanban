@@ -1,6 +1,9 @@
+/* Не совсем понял требования про модификаторы у поля manager и внутренних классов
+* Если внутренние классы HttpHandler'ы будут статическими, то нельзя в них вызывать менеджер задач
+* и сохранять в него что-либо. Есть ощущение, что тут противоречие между комментариями в первом и втором ревью */
+
 package net.yandex.taskmanager.services;
 
-import com.google.gson.reflect.TypeToken;
 import net.yandex.taskmanager.model.*;
 
 import com.google.gson.Gson;
@@ -10,34 +13,35 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+// Импорты для ручных тестов
+import java.time.LocalDateTime;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.*;
+import com.google.gson.reflect.TypeToken;
+
 
 public class HTTPTaskServer {
 
     private static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final Gson gson = new Gson();
-    private static TaskManager manager = null;
+    private final TaskManager manager;
     private HttpServer httpServer;
 
     public HTTPTaskServer() throws IOException {
-        manager = Managers.getDefault();
-        startServer();
+        this(Managers.getDefault());
     }
 
     public HTTPTaskServer(TaskManager manager) throws IOException {
         this.manager = manager;
         startServer();
     }
-
 
     public void startServer() throws IOException {
         httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
@@ -58,7 +62,7 @@ public class HTTPTaskServer {
         httpServer.stop(1);
     }
 
-    private static class AllTasksHandler implements HttpHandler {
+    private class AllTasksHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String method = exchange.getRequestMethod();
@@ -75,7 +79,7 @@ public class HTTPTaskServer {
         }
     }
 
-    private static class TasksHandler implements HttpHandler {
+    private class TasksHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String method = exchange.getRequestMethod();
@@ -175,7 +179,7 @@ public class HTTPTaskServer {
         }
     }
 
-    private static class EpicsHandler implements HttpHandler {
+    private class EpicsHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String method = exchange.getRequestMethod();
@@ -229,6 +233,12 @@ public class HTTPTaskServer {
 
                 case "POST":
                     String body = readBody(exchange);
+                    if (body.isBlank()) {
+                        response = "Передан пустой POST-запрос";
+                        exchange.sendResponseHeaders(400, 0);
+                        sendBody(exchange, response);
+                        return;
+                    }
 
                     EpicTask newTask = gson.fromJson(body, EpicTask.class);
                     if (newTask.getId() == null){
@@ -271,7 +281,7 @@ public class HTTPTaskServer {
         }
     }
 
-    private static class SubTasksHandler implements HttpHandler {
+    private class SubTasksHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String method = exchange.getRequestMethod();
@@ -325,6 +335,13 @@ public class HTTPTaskServer {
 
                 case "POST":
                     String body = readBody(exchange);
+                    if (body.isBlank()) {
+                        response = "Передан пустой POST-запрос";
+                        exchange.sendResponseHeaders(400, 0);
+                        sendBody(exchange, response);
+                        return;
+                    }
+
                     SubTask newTask = gson.fromJson(body, SubTask.class);
                     if (manager.getEpicByID(newTask.getEpicID()) == null){
                         response = "Не найден эпик для данной подзадачи.";
@@ -371,7 +388,7 @@ public class HTTPTaskServer {
         }
     }
 
-    private static class HistoryHandler implements HttpHandler {
+    private class HistoryHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String method = exchange.getRequestMethod();

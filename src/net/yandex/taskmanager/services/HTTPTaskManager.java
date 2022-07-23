@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 public class HTTPTaskManager extends FileBackedTasksManager implements TaskManager {
 
     private final KVTaskClient client;
-    private final String TASKS = "tasks";
-    private final String EPICS = "epics";
-    private final String SUBTASKS = "subtasks";
-    private final String HISTORY = "history";
+    private static final String TASKS = "tasks";
+    private static final String EPICS = "epics";
+    private static final String SUBTASKS = "subtasks";
+    private static final String HISTORY = "history";
     private static final Gson gson = new Gson();
 
     public HTTPTaskManager(String address, boolean check) {
@@ -32,9 +32,9 @@ public class HTTPTaskManager extends FileBackedTasksManager implements TaskManag
 
     @Override
     public void save() {
-        client.put(TASKS, gson.toJson(new ArrayList<>(getTasks())));
-        client.put(EPICS, gson.toJson(new ArrayList<>(getEpics())));
-        client.put(SUBTASKS, gson.toJson(new ArrayList<>(getSubTasks())));
+        client.put(TASKS, gson.toJson(getTasks()));
+        client.put(EPICS, gson.toJson(getEpics()));
+        client.put(SUBTASKS, gson.toJson(getSubTasks()));
 
         String jsonHistory = gson.toJson(
                 getHistory().stream().map(Task::getId).collect(Collectors.toList())
@@ -43,7 +43,7 @@ public class HTTPTaskManager extends FileBackedTasksManager implements TaskManag
     }
 
     public void load() {
-        List<String> keys = new ArrayList<>(List.of(TASKS, EPICS, SUBTASKS));
+        List<String> keys = List.of(TASKS, EPICS, SUBTASKS);
 
         for (String key : keys) {
             String loaded = client.load(key);

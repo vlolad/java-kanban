@@ -18,10 +18,6 @@ public class KVTaskClient {
         register(address);
     }
 
-    public String getAPI_TOKEN() {
-        return API_TOKEN;
-    }
-
     public void put(String key, String json) {
         URI url = URI.create(serverURL + "/save/" + key + "?API_TOKEN=" + API_TOKEN);
         final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
@@ -72,7 +68,7 @@ public class KVTaskClient {
             this.API_TOKEN = token.body();
 
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            throw new TaskClientException("Ошибка при регистрации менеджера");
         }
     }
 

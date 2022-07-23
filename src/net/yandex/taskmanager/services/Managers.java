@@ -4,7 +4,7 @@ import java.io.File;
 
 public class Managers {
 
-    public static HTTPTaskManager getDefault() {
+    public static TaskManager getDefault() {
         return new HTTPTaskManager();
     }
 
@@ -12,11 +12,11 @@ public class Managers {
         return new InMemoryHistoryManager();
     }
 
-    public static FileBackedTasksManager getFileBacked(String csvFileName) {
+    public static TaskManager getFileBacked(String csvFileName) {
         return new FileBackedTasksManager(new File(csvFileName + ".csv"));
     }
 
-    public static InMemoryTaskManager getInMemoryTaskManager() {
+    public static TaskManager getInMemoryTaskManager() {
         return new InMemoryTaskManager();
     }
 }

@@ -8,30 +8,8 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Поехали!");
 
-        InMemoryTaskManager manager = Managers.getInMemoryTaskManager();
-
-        manager.createEpic(new EpicTask(1, "Epic1", "neew"));
-        manager.createSubTask(new SubTask(2, "SubTask2", "sus", TaskStatus.DONE, 1));
-        System.out.println(manager.getEpicByID(1));
-
-        Task convertedEpic = manager.getEpicByID(1);
-        System.out.println("cho?? - " + convertedEpic);
-
-        EpicTask backedEpic = (EpicTask) convertedEpic;
-        System.out.println(backedEpic);
-        System.out.println(backedEpic.equals(manager.getEpicByID(1)));
-
-        System.out.println("\n" + convertedEpic.getClass().getSimpleName() + "\n"
-                + backedEpic.getClass().getSimpleName() + "\n"
-                + ((SubTask) manager.getSubTaskByID(2)).getClass().getSimpleName() + "\n");
-
-        ArrayList<EpicTask> list = new ArrayList<>();
-        list.add(backedEpic);
-        list.add((EpicTask) manager.getEpicByID(1));
-
-        methodToGet(list);
+        //Тут код для ручных тестов, для истории
 
         /*StringBuilder builder = new StringBuilder();
         builder.append("Heh \n");
@@ -153,9 +131,9 @@ public class Main {
  */
     }
 
-    private static <T> void methodToGet(ArrayList<T> list) {
+    /*private static <T> void methodToGet(ArrayList<T> list) {
         System.out.println(list.getClass());
         System.out.println(list.getClass().getSimpleName());
-    }
+    }*/
 }
 
