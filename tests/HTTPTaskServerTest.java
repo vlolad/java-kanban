@@ -16,6 +16,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -32,11 +33,12 @@ public class HTTPTaskServerTest {
     }
 
     @BeforeEach
-    public void createServer() throws IOException, InterruptedException {
+    public void createServer() throws IOException {
         System.setOut(new PrintStream(new ByteArrayOutputStream())); // Иначе System.out выбрасывает NPE
         mainServer = new KVServer();
         mainServer.start();
         server = new HTTPTaskServer();
+        server.start();
     }
 
     @AfterEach
@@ -57,26 +59,18 @@ public class HTTPTaskServerTest {
         HttpResponse<String> responsePost = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responsePost.statusCode(),
                 "Ошибка при отправлении POST-запроса на создание новой TASK");
-        assertEquals(1, server.getManager().getTaskByID(1).getId(),
-                "Задача не была сохранена в менеджере на сервере");
 
         URI secondUrl = URI.create(mainUrl + "task/?id=1");
         HttpRequest requestGet = HttpRequest.newBuilder().uri(secondUrl).GET().build();
         HttpResponse<String> responseGet = client.send(requestGet, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responseGet.statusCode(),
                 "Ошибка при отправлении GET-запроса на получение TASK");
-        assertEquals(1, server.getManager().getHistory().get(0).getId(),
-                "История менеджера не была заполнена при отправлении GET-запроса");
 
         URI thirdUrl = URI.create(mainUrl + "task/history");
         HttpRequest GETHistory = HttpRequest.newBuilder().uri(thirdUrl).GET().build();
         HttpResponse<String> responseGETHistory = client.send(GETHistory, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responseGETHistory.statusCode(),
                 "Ошибка в запросе истории.");
-        List<Task> gettingHistory = gson.fromJson(responseGETHistory.body(),
-                new TypeToken<List<Task>>(){}.getType());
-        assertEquals(gettingHistory, server.getManager().getHistory(),
-                "Ошибка при сравнении полученной и сохраненной историей.");
 
         Task updTask = new Task(1, "Task2", "brand new", TaskStatus.DONE,
                 LocalDateTime.of(2021, 7, 10, 20, 0), 30);
@@ -87,47 +81,11 @@ public class HTTPTaskServerTest {
         HttpResponse<String> responsePostUpd = client.send(requestPostUpd, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responsePostUpd.statusCode(),
                 "Ошибка при отправлении POST-запроса на обновление TASK");
-        assertEquals("Task2", server.getManager().getTaskByID(1).getName(),
-                "Обновленная задача была неверно сохранена в менеджере на сервере");
 
         HttpRequest requestDelete = HttpRequest.newBuilder().uri(secondUrl).DELETE().build();
         HttpResponse<String> responseDelete = client.send(requestDelete, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responseDelete.statusCode(),
                 "Ошибка при отправлении DELETE-запроса на удаление TASK");
-        assertNull(server.getManager().getTaskByID(1),
-                "Задача не была удалена при отправлении DELETE-запроса");
-    }
-
-    @Test
-    public void getAllTasks() throws IOException, InterruptedException {
-        fillManagerWithTasks(server);
-
-        URI url = URI.create(mainUrl.toString());
-        HttpRequest requestGet = HttpRequest.newBuilder().uri(url).GET().build();
-        HttpResponse<String> responseGet = client.send(requestGet, HttpResponse.BodyHandlers.ofString());
-
-        String[] result = responseGet.body().split("\n");
-        List<Task> getTaskList = gson.fromJson(result[0], new TypeToken<List<Task>>(){}.getType());
-        List<EpicTask> getEpicList = gson.fromJson(result[1], new TypeToken<List<EpicTask>>(){}.getType());
-        List<SubTask> getSubTaskList = gson.fromJson(result[2], new TypeToken<List<SubTask>>(){}.getType());
-
-        assertEquals(getTaskList, server.getManager().getTasks(), "Ошибка в получении задач.");
-        assertEquals(getEpicList, server.getManager().getEpics(), "Ошибка в получении эпиков.");
-        assertEquals(getSubTaskList, server.getManager().getSubTasks(), "Ошибка в получении подзадач.");
-    }
-
-    @Test
-    public void deleteAllTasks() throws IOException, InterruptedException {
-        fillManagerWithTasks(server);
-
-        URI url = URI.create(mainUrl.toString());
-        HttpRequest requestDelete = HttpRequest.newBuilder().uri(url).DELETE().build();
-        HttpResponse<String> responseDelete = client.send(requestDelete, HttpResponse.BodyHandlers.ofString());
-
-        HttpRequest requestGet = HttpRequest.newBuilder().uri(url).GET().build();
-        HttpResponse<String> responseGet = client.send(requestGet, HttpResponse.BodyHandlers.ofString());
-
-        assertTrue(responseGet.body().isBlank(), "История, полученная после DELETE-запроса, не пустая");
     }
 
     @Test
@@ -184,17 +142,13 @@ public class HTTPTaskServerTest {
 
     @Test
     public void testEpics() throws IOException, InterruptedException {
-        EpicTask task = new EpicTask("Epic1", "neew");
-        String json = gson.toJson(task);
-        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
+        HttpResponse<String> responsePost = createTectEpic();
 
-        URI urlPost = URI.create(mainUrl + "epic/");
-        HttpRequest requestPost = HttpRequest.newBuilder().uri(urlPost).POST(body).build();
-        HttpResponse<String> responsePost = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responsePost.statusCode(),
                 "Ошибка при отправлении POST-запроса на создание новой EPIC");
-        assertEquals(1, server.getManager().getEpicByID(1).getId(),
-                "EPIC не была сохранена в менеджере на сервере");
+        assertEquals(responsePost.body(), "Эпик успешно создан!",
+                "Неверный ответ сервера при попытке создать Эпик.");
+
 
         EpicTask taskUpd = new EpicTask(1, "Epic2", "neeeeeew");
         String jsonUpd = gson.toJson(taskUpd);
@@ -204,8 +158,8 @@ public class HTTPTaskServerTest {
         HttpResponse<String> responsePostUpd = client.send(requestPostUpd, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responsePostUpd.statusCode(),
                 "Ошибка при отправлении POST-запроса на обновление EPIC");
-        assertEquals("Epic2", server.getManager().getEpicByID(1).getName(),
-                "Обновленная EPIC не была сохранена в менеджере на сервере");
+        assertEquals(responsePostUpd.body(), "Эпик успешно обновлен!",
+                "Неверный ответ сервера при попытке обновить Эпик.");
 
         HttpRequest requestPostGet = HttpRequest.newBuilder().uri(urlPostUpd).GET().build();
         HttpResponse<String> responsePostGet = client.send(requestPostGet, HttpResponse.BodyHandlers.ofString());
@@ -216,13 +170,26 @@ public class HTTPTaskServerTest {
         HttpResponse<String> responsePostDelete = client.send(requestPostDelete, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responsePostDelete.statusCode(),
                 "Ошибка при отправлении DELETE-запроса на удаление EPIC");
-        assertNull(server.getManager().getEpicByID(1),
-                "EPIC не была удалена после направления DELETE-запроса");
+
+        HttpRequest requestPostGetAfterDelete = HttpRequest.newBuilder().uri(urlPostUpd).GET().build();
+        HttpResponse<String> responsePostGetAfterDelete = client.send(requestPostGetAfterDelete,
+                HttpResponse.BodyHandlers.ofString());
+        assertEquals(404, responsePostGetAfterDelete.statusCode(),
+                "Ошибка при отправлении GET-запроса на получение удаленного EPIC");
+    }
+
+    @Test
+    public void getEmptyEpics() throws IOException, InterruptedException {
+        URI urlGet = URI.create(mainUrl + "epic");
+        HttpRequest requestPostGet = HttpRequest.newBuilder().uri(urlGet).GET().build();
+        HttpResponse<String> responsePostGet = client.send(requestPostGet, HttpResponse.BodyHandlers.ofString());
+        assertEquals(404, responsePostGet.statusCode(),
+                "Ошибка при отправлении GET-запроса на получение пустого списка EPIC");
     }
 
     @Test
     public void testSubTasks() throws IOException, InterruptedException {
-        server.getManager().createEpic(new EpicTask("Epic1", "neew"));
+        createTectEpic();
 
         SubTask task = new SubTask("Sub1", "neew", 1);
         String json = gson.toJson(task);
@@ -233,8 +200,6 @@ public class HTTPTaskServerTest {
         HttpResponse<String> responsePost = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responsePost.statusCode(),
                 "Ошибка при отправлении POST-запроса на создание новой подзадачи");
-        assertEquals(2, server.getManager().getSubTaskByID(2).getId(),
-                "Подзадача не была сохранена в менеджере на сервере");
 
         SubTask taskUpd = new SubTask(2, "Sub222", "neeeeeew", TaskStatus.DONE, 1);
         String jsonUpd = gson.toJson(taskUpd);
@@ -244,34 +209,50 @@ public class HTTPTaskServerTest {
         HttpResponse<String> responsePostUpd = client.send(requestPostUpd, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responsePostUpd.statusCode(),
                 "Ошибка при отправлении POST-запроса на обновление подзадачи");
-        assertEquals("Sub222", server.getManager().getSubTaskByID(2).getName(),
-                "Обновленная подзадача не была сохранена в менеджере на сервере");
 
         HttpRequest requestPostGet = HttpRequest.newBuilder().uri(urlPostUpd).GET().build();
         HttpResponse<String> responsePostGet = client.send(requestPostGet, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responsePostGet.statusCode(),
                 "Ошибка при отправлении GET-запроса на получение подзадачи");
 
+        HttpRequest requestPostGetAll = HttpRequest.newBuilder().uri(urlPost).GET().build();
+        HttpResponse<String> responsePostGetAll = client.send(requestPostGetAll, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, responsePostGetAll.statusCode(),
+                "Ошибка при отправлении GET-запроса на получение списка подзадач");
+
         HttpRequest requestPostDelete = HttpRequest.newBuilder().uri(urlPostUpd).DELETE().build();
         HttpResponse<String> responsePostDelete = client.send(requestPostDelete, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responsePostDelete.statusCode(),
                 "Ошибка при отправлении DELETE-запроса на удаление подзадачи");
-        assertNull(server.getManager().getSubTaskByID(2),
-                "Подзадача не была удалена после направления DELETE-запроса");
+
+        HttpRequest requestPostGetAllEmpty = HttpRequest.newBuilder().uri(urlPost).GET().build();
+        HttpResponse<String> responsePostGetAllEmpty = client.send(requestPostGetAllEmpty,
+                HttpResponse.BodyHandlers.ofString());
+        assertEquals(404, responsePostGetAllEmpty.statusCode(),
+                "Ошибка при отправлении GET-запроса на получение пустого списка подзадач");
     }
 
-    private void fillManagerWithTasks(HTTPTaskServer server) {
-        server.getManager().createTask(new Task("test1", "sus"));
-        server.getManager().createEpic(new EpicTask("Epic1", "neew"));
-        server.getManager().createSubTask(new SubTask("SubTask1", "neeew", TaskStatus.IN_PROGRESS, 2,
-                LocalDateTime.of(2022, 7, 11, 20, 0), 15));
-        server.getManager().createSubTask(new SubTask("SubTask2", "sus", TaskStatus.NEW, 2,
-                LocalDateTime.of(2022, 7, 11, 22, 0), 60));
+    @Test
+    public void testNoEpicForThisSubTask() throws IOException, InterruptedException {
+        SubTask task = new SubTask("Sub1", "neew", 1);
+        String json = gson.toJson(task);
+        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
 
-        server.getManager().getTaskByID(1);
-        server.getManager().getSubTaskByID(3);
-        server.getManager().getEpicByID(2);
-        server.getManager().getSubTaskByID(4);
-        server.getManager().getTaskByID(1);
+        URI urlPost = URI.create(mainUrl + "subtask/");
+        HttpRequest requestPost = HttpRequest.newBuilder().uri(urlPost).POST(body).build();
+        HttpResponse<String> responsePost = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
+        assertEquals(404, responsePost.statusCode(),
+                "Ошибка при отправлении POST-запроса на создание новой подзадачи при отсутствии эпика.");
     }
+
+    private HttpResponse<String> createTectEpic() throws IOException, InterruptedException {
+        EpicTask task = new EpicTask("Epic1", "neew");
+        String json = gson.toJson(task);
+        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
+        URI urlPost = URI.create(mainUrl + "epic/");
+        HttpRequest requestPost = HttpRequest.newBuilder().uri(urlPost).POST(body).build();
+        return client.send(requestPost, HttpResponse.BodyHandlers.ofString());
+    }
+
+
 }

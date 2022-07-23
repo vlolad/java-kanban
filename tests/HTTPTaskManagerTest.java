@@ -85,7 +85,7 @@ public class HTTPTaskManagerTest extends TaskManagerTest<HTTPTaskManager> {
                         getTaskManager().getHistory().size());
 
         getTaskManager().createTask(new Task("newTest1", "sas"));
-        assertEquals(4, getTaskManager().getTaskByID(4).getId(),
+        assertEquals(4, getTaskManager().getId(),
                 "Неверная загрузка последнего использованного ID из файла.");
     }
 
