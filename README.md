@@ -1,2 +1,2 @@
 # java-kanban
-Repository for homework project.
+Simple backend service for kanban task manager app
